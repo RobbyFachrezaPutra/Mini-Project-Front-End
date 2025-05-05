@@ -1,5 +1,10 @@
-import HomeView from "@/pages/home";
+import HomeView from "@/components/homepage";
+import Navbar from "@/components/navbar";
 
 export default function Home() {
-  return <HomeView />;
+  return (<>
+      <Navbar />
+        <HomeView />
+        /</>
+      );
 }

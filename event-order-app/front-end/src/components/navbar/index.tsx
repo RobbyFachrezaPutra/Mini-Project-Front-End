@@ -58,13 +58,13 @@ const Navbar = () => {
           {!userAuth.isLogin ? (
             <>
               <Link
-                href="/Register"
+                href="/pages/Register"
                 className="border-2 px-3 py-2 rounded-2xl w-[100px] text-center hover:bg-sky-800"
               >
                 Register
               </Link>
               <Link
-                href="/Login"
+                href="/pages/Login"
                 className="border-2 px-3 py-2 rounded-2xl w-[100px] text-center bg-stone-50 text-cyan-600"
               >
                 Login
