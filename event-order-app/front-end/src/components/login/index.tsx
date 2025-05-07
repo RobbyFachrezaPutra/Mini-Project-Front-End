@@ -8,6 +8,7 @@ import { useAppDispatch } from "@/lib/redux/hooks";
 import { login } from "@/lib/redux/slices/authSlice";
 import axios from "axios";
 import * as Yup from "yup";
+import { ToastContainer, toast } from "react-toastify";
 
 // 1. Buat Yup schema sesuai IRegisterParam
 const LoginSchema = Yup.object().shape({
@@ -39,22 +40,26 @@ export default function LoginPage() {
                 `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/auth/login`,
                 values,
                 {
-                  withCredentials: true, // penting kalau pakai cookies
+                  withCredentials: true,
                 }
               );
 
               if (!res.data) {
                 const errorData = await res.data;
-                alert(`Gagal: ${errorData.message || "Terjadi kesalahan"}`);
+                toast.error(
+                  `Gagal: ${errorData.message || "Terjadi kesalahan"}`
+                );
               } else {
-                alert("Berhasil login!");
+                toast.success("Berhasil login!");
                 console.log("User data:", res.data);
+                const responseData = res.data;
                 dispatch(
                   login({
-                    email: res.data.email,
-                    name: res.data.name,
-                    image: res.data.image,
-                    role: res.data.role,
+                    email: responseData.data.email,
+                    first_name: responseData.data.first_name,
+                    last_name: responseData.data.last_name,
+                    profile_picture: responseData.data.profile_picture,
+                    role: responseData.data.role,
                     isLogin: true,
                   })
                 );

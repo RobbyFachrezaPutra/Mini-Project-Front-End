@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { getUserData } from "@/utils/api";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { string } from "yup";
-import { logout } from "@/lib/redux/slices/authSlice";
+import { login, logout } from "@/lib/redux/slices/authSlice";
 
 interface User {
   role: string;
@@ -19,20 +19,32 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
   const userAuth = useAppSelector((state) => state.auth);
+  console.log(userAuth);
   const dispatch = useAppDispatch();
 
   // useEffect(() => {
-  //   const token = getCookie("access_token"); // Ambil token dari cookie
-  //   if (token === "string") {
+  //   console.log("useEffect is running...");
+  //   const token = getCookie("acces_token");
+  //   console.log("Token:", token); // Ambil token dari cookie
+  //   if (typeof token === "string" && token !== "") {
   //     getUserData(token)
   //       .then((data) => {
-  //         setUser(data); // Update state dengan data pengguna
+  //         console.log("User data received:", data);
+  //         dispatch(
+  //           login({
+  //             email: data.email,
+  //             name: `${data.first_name} ${data.last_name}`,
+  //             image: data.profile_picture || "", // Ambil profile_picture dari backend
+  //             role: data.role,
+  //             isLogin: true,
+  //           })
+  //         ); // Update state dengan data pengguna
   //       })
   //       .catch((err) => {
   //         console.error("Failed to fetch user data:", err);
   //       });
   //   }
-  // }, []);
+  // }, [dispatch]);
 
   const handleLogout = () => {
     deleteCookie("acces_token");
@@ -71,38 +83,50 @@ const Navbar = () => {
               </Link>
             </>
           ) : (
-            <div className="relative">
-              <img
-                src={userAuth.image || "/default.jpg"}
-                alt="profile"
-                className="w-10 h-10 rounded-full cursor-pointer border-2 border-white"
-                onClick={() => setMenuOpen(!menuOpen)}
-              />
-              {menuOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-md z-50 text-black">
-                  {userAuth.role === "event_organizer" ? (
-                    <Link
-                      href="/dashboard"
+            <div className="flex items-center gap-4 text-white">
+              <span className="font-medium">{userAuth.first_name}</span>
+
+              <div className="relative">
+                <img
+                  src={userAuth.profile_picture || "/default.jpg"}
+                  alt="profile"
+                  className="w-15 h-15 rounded-full cursor-pointer border-2 border-white"
+                  onClick={() => setMenuOpen(!menuOpen)}
+                />
+                {menuOpen && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-md z-50 text-black">
+                    {userAuth.role === "event_organizer" ? (
+                      <div>
+                        <Link
+                          href="/pages/Dashboard"
+                          className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                        >
+                          Dashboard
+                        </Link>
+                        <Link
+                          href="/pages/Profile"
+                          className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                        >
+                          Profile
+                        </Link>
+                      </div>
+                    ) : (
+                      <Link
+                        href="/pages/Profile"
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      >
+                        Profile
+                      </Link>
+                    )}
+                    <button
+                      onClick={handleLogout}
                       className="block w-full text-left px-4 py-2 hover:bg-gray-100"
                     >
-                      Dashboard
-                    </Link>
-                  ) : (
-                    <Link
-                      href="/profile"
-                      className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                    >
-                      Profile
-                    </Link>
-                  )}
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
