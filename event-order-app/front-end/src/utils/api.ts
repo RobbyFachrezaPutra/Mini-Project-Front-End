@@ -10,7 +10,11 @@ export const getUserData = async (token: string) => {
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch user data");
+    return {
+      status: false,
+      code: 404,
+      message: "",
+    };
   }
 
   return res.json();

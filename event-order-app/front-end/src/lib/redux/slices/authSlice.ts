@@ -2,16 +2,18 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface IAuth {
   email: string;
-  name: string;
-  image: string;
+  first_name: string;
+  last_name: string;
+  profile_picture: string;
   role: string;
   isLogin: boolean;
 }
 
 const initialState: IAuth = {
   email: "",
-  name: "",
-  image: "",
+  first_name: "",
+  last_name: "",
+  profile_picture: "",
   role: "",
   isLogin: false,
 };
@@ -22,8 +24,10 @@ export const authSlice = createSlice({
   reducers: {
     login: (state: IAuth, action: PayloadAction<IAuth>) => {
       state.email = action.payload.email;
-      state.name = action.payload.name;
-
+      state.first_name = action.payload.first_name;
+      state.last_name = action.payload.last_name;
+      state.profile_picture = action.payload.profile_picture; // Menyimpan image dari payload
+      state.role = action.payload.role;
       state.isLogin = true;
     },
     logout: (state: IAuth) => {
