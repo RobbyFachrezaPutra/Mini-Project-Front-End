@@ -8,7 +8,7 @@ import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
-import TicketPurchaseDialog from "./dialog";
+import BuyTicketDialog from "./dialog";
 
 export default function EventTransaction() {
   const params = useParams();
@@ -142,7 +142,7 @@ export default function EventTransaction() {
           </button>
         </div>
       </div>
-      <TicketPurchaseDialog
+      <BuyTicketDialog
         open={isDialogOpen}
         onClose={handleCloseDialog}
         eventId={event.id}
