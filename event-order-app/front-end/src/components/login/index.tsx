@@ -56,6 +56,7 @@ export default function LoginPage() {
               if (res.data.data?.email) {
                 // Cek field spesifik
                 toast.success("Berhasil login!");
+                localStorage.setItem("user", JSON.stringify(res.data.data))
                 dispatch(
                   login({
                     email: res.data.data.email,
