@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import api from "@/lib/axiosInstance";
 
 const ProfilePage = () => {
   const router = useRouter();
@@ -30,16 +31,49 @@ const ProfilePage = () => {
   // Toggle password fields
 
   useEffect(() => {
+    //   const fetchProfileData = async () => {
+    //     try {
+    //       const token = getCookie("acces_token");
+    //       if (!token) {
+    //         setError("No token found, please log in.");
+    //         return;
+    //       }
+
+    //       const response = await axios.get(
+    //         `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/profile/user-profile`,
+    //         {
+    //           headers: {
+    //             Authorization: `Bearer ${token}`,
+    //           },
+    //         }
+    //       );
+
+    //       const user = response.data.data; // Ambil dari data.data
+    //       console.log("Data user:", user);
+
+    //       setUserData(user);
+    const storedUser = JSON.parse(localStorage.getItem("user") || "null");
     setFormData({
-      first_name: userAuth.first_name || "",
-      last_name: userAuth.last_name || "",
-      email: userAuth.email || "",
-      profile_picture: userAuth.profile_picture || "/default-profile.png",
+      first_name: storedUser.first_name || "",
+      last_name: storedUser.last_name || "",
+      email: storedUser.email || "",
+      profile_picture: storedUser.profile_picture || "/default-profile.png",
       password: "",
       new_password: "",
       confirm_password: "",
-      referral_code: userAuth.referral_code || "",
+      referral_code: userAuth.referral_code || "",      
     });
+
+    //   setLoading(false);
+    //     } catch (err) {
+    //       console.error(" Gagal fetch data:", err);
+    //       setError("Failed to fetch profile data.");
+    //       setLoading(false);
+    //     }
+    //   };
+
+    //   fetchProfileData();
+
     setLoading(false);
   }, [userAuth]);
 
@@ -127,7 +161,8 @@ const ProfilePage = () => {
 
   const handleSave = async () => {
     try {
-      const token = getCookie("acces_token");
+      const token = getCookie("access_token");
+
       if (!token) {
         toast.error("Silakan login terlebih dahulu");
         return;
@@ -147,17 +182,18 @@ const ProfilePage = () => {
       }
 
       const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/profile/update-profile`,
-        formPayload,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/profile/edit-profile`,
+        formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            // Jangan set Content-Type secara manual untuk FormData,
-            // biarkan browser yang menangani boundary-nya
           },
         }
       );
-
+      
+      localStorage.removeItem("user");
+      localStorage.setItem("user", JSON.stringify(response.data.data));
+      setUserData(response.data.data);
       setIsEditing(false);
       toast.success("Profil berhasil diperbarui!");
     } catch (err) {

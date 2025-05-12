@@ -1,11 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 import authSlice from "./slices/authSlice";
-
+import searchSlice from "./slices/searchSlice";
+import eventSlice from "./slices/eventSlice";
 export function makeStore() {
   return configureStore({
     reducer: {
       auth: authSlice,
+      search: searchSlice,
+      event: eventSlice,
     },
   });
 }

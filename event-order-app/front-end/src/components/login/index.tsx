@@ -2,13 +2,10 @@
 
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useRouter } from "next/navigation";
-
 import { useAppDispatch } from "@/lib/redux/hooks";
-
-import { login } from "@/lib/redux/slices/authSlice";
-import axios from "axios";
 import * as Yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
+import api from "@/lib/axiosInstance";
 
 // 1. Buat Yup schema sesuai IRegisterParam
 const LoginSchema = Yup.object().shape({
@@ -17,6 +14,7 @@ const LoginSchema = Yup.object().shape({
     .required("Email is required"),
   password: Yup.string().required("Password is required"),
 });
+
 
 export default function LoginPage() {
   const router = useRouter();
