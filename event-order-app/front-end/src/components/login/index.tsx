@@ -6,7 +6,8 @@ import { useAppDispatch } from "@/lib/redux/hooks";
 import * as Yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
 import api from "@/lib/axiosInstance";
-
+import axios from "axios";
+import { login } from "@/lib/redux/slices/authSlice";
 // 1. Buat Yup schema sesuai IRegisterParam
 const LoginSchema = Yup.object().shape({
   email: Yup.string()
@@ -34,7 +35,7 @@ export default function LoginPage() {
           validationSchema={LoginSchema}
           onSubmit={async (values, { resetForm }) => {
             try {
-              const res = await axios.post(
+              const res = await api.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/auth/login`,
                 values,
                 {
