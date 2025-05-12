@@ -5,13 +5,13 @@ import { toast } from "react-toastify";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
-  withCredentials: true
+  withCredentials: true,
 });
 
 // Response interceptor
 api.interceptors.response.use(
-  res => res,
-  async err => {
+  (res) => res,
+  async (err) => {
     const originalRequest = err.config;
 
     if (err.response?.status === 401 && !originalRequest._retry) {
