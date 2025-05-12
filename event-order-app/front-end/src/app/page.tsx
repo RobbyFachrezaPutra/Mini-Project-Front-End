@@ -1,9 +1,9 @@
-import HomeView from "@/components/homepage";
-import Navbar from "@/components/navbar";
 import HomePage from "./pages/homepage/page";
-
+import { Suspense } from "react";
 export default function Home() {
   return (
+    <Suspense>
         <HomePage />
-      );
+    </Suspense>
+    );
 }

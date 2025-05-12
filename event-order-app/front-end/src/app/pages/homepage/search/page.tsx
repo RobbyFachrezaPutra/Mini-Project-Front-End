@@ -1,5 +1,10 @@
 import SearchEvent from "@/components/homepage/search"
+import { Suspense } from "react";
 
 export default function EmptyHomPage() {
-  return <SearchEvent />
+  return (
+    <Suspense>
+      <SearchEvent />
+    </Suspense>
+  )
 }
