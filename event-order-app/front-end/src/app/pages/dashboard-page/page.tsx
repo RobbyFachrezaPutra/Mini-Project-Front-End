@@ -5,6 +5,6 @@ export default function Dashboard() {
   return (
     <Suspense>
       <DashboardPage />
-    </Suspense>    
-  )
+    </Suspense>
+  );
 }
