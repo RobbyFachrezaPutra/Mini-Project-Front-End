@@ -1,132 +1,193 @@
 "use client";
 
 import Link from "next/link";
-import { deleteCookie, getCookie } from "cookies-next";
-import { useState, useEffect } from "react";
+import { deleteCookie } from "cookies-next";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getUserData } from "@/utils/api";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { string } from "yup";
-import { login, logout } from "@/lib/redux/slices/authSlice";
-
-interface User {
-  role: string;
-  image: string | null;
-}
+import { IUserParam } from "@/interface/user.interface";
+import { toast } from "react-toastify";
+import { useSearchParams } from "next/navigation";
 
 const Navbar = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<IUserParam | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [category, setCategory] = useState("");
+  const [location, setLocation] = useState("");
+  const [reload, setReload] = useState(false);
+  const categories = useAppSelector((state) => state.event.categories);
+  const locations = useAppSelector((state) => state.event.locations);
   const router = useRouter();
-  const userAuth = useAppSelector((state) => state.auth);
-  console.log(userAuth);
   const dispatch = useAppDispatch();
+  const searchParams = useSearchParams();
+  const keywordFromUrl = searchParams.get("keyword") || "";
+  const [search, setSearch] = useState(keywordFromUrl);
+  const refreshUser = () => setReload(prev => !prev);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // useEffect(() => {
-  //   console.log("useEffect is running...");
-  //   const token = getCookie("acces_token");
-  //   console.log("Token:", token); // Ambil token dari cookie
-  //   if (typeof token === "string" && token !== "") {
-  //     getUserData(token)
-  //       .then((data) => {
-  //         console.log("User data received:", data);
-  //         dispatch(
-  //           login({
-  //             email: data.email,
-  //             name: `${data.first_name} ${data.last_name}`,
-  //             image: data.profile_picture || "", // Ambil profile_picture dari backend
-  //             role: data.role,
-  //             isLogin: true,
-  //           })
-  //         ); // Update state dengan data pengguna
-  //       })
-  //       .catch((err) => {
-  //         console.error("Failed to fetch user data:", err);
-  //       });
-  //   }
-  // }, [dispatch]);
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+    setUser(storedUser);
+  }, [reload]);
 
   const handleLogout = () => {
-    deleteCookie("acces_token");
-    dispatch(logout());
-    router.refresh(); // Arahkan ke halaman login setelah logout
+    deleteCookie("access_token");
+    localStorage.removeItem("user");
+    toast.success("Log out successfully");
+    refreshUser();
+    router.refresh();
+  };
+
+  useEffect(() => {
+    setSearch(keywordFromUrl); // sync ulang ketika URL berubah
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [keywordFromUrl]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      handleSearchAuto(search);
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [search]);
+
+  const handleSearchAuto = async (query: string) => {
+    try {
+      if(query) router.push(`/pages/homepage?keyword=${encodeURIComponent(query)}`)
+        else {
+          router.push('/')
+        }
+    } catch (err) {
+      toast.error("Gagal mencari data");
+    }
+  };
+
+  const handleSearchSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!search.trim()) return;
+
+    try {
+      router.push(`/pages/homepage?keyword=${encodeURIComponent(search)}&category=${encodeURIComponent(category)}&location=${encodeURIComponent(location)}`);
+    } catch (err) {
+      router.push(`/pages/homepage?keyword=${encodeURIComponent(search)}&category=${encodeURIComponent(category)}&location=${encodeURIComponent(location)}`);
+    }
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full h-14 z-50 flex justify-between items-center px-12 md:px-20 py-8 shadow-lg backdrop-blur-lg border-b-2 border-[#fffdf6] bg-sky-600">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="text-stone-50 text-2xl">Tiketin.com</div>
+    <nav className="fixed top-0 left-0 w-full z-50 px-4 py-2 shadow-lg backdrop-blur-lg border-b-2 border-[#fffdf6] bg-sky-600">
+      <div className="container mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <Link href="/" className="text-stone-50 text-2xl">
+          Tiketin.com
+        </Link>
 
-        {/* nanti di lanjut lagi */}
-        {/* <div className="relative">
+        <form onSubmit={handleSearchSubmit} className="w-full flex flex-col md:flex-row md:items-center gap-2">
           <input
+            ref={inputRef}
             type="text"
-            placeholder="Search..."
-            className="pl-4 pr-4 py-2 rounded-xl w-64 text-black border-2 border-stone-50"
+            placeholder="Search events..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-4 pr-4 py-2 rounded-xl text-black border-2 border-stone-50 focus:outline-none focus:ring-2 focus:ring-white w-full md:w-64"
           />
-        </div> */}
+          <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="py-2 px-3 rounded-xl text-black border-2 border-stone-50 bg-white w-full sm:w-auto"
+            >
+              <option value="">All Categories</option>
+              {categories.map((cat, idx) => (
+                <option key={cat.id} value={cat.name}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+            <select
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="py-2 px-3 rounded-xl text-black border-2 border-stone-50 bg-white w-full sm:w-auto"
+            >
+              <option value="">All Locations</option>
+              {locations.map((loc, idx) => (
+                <option key={idx} value={loc}>
+                  {loc}
+                </option>
+              ))}
+            </select>
+          </div>
+        </form>
 
-        <div className="flex items-center gap-4 text-stone-50 relative">
-          {!userAuth.isLogin ? (
-            <>
+        <div className="flex items-center gap-4 text-stone-50 relative self-end md:self-auto">
+          {!user ? (
+            <div className="flex flex-col sm:flex-row gap-2">
               <Link
-                href="/pages/Register"
+                href="/pages/register"
                 className="border-2 px-3 py-2 rounded-2xl w-[100px] text-center hover:bg-sky-800"
               >
                 Register
               </Link>
               <Link
-                href="/pages/Login"
+                href="/pages/login"
                 className="border-2 px-3 py-2 rounded-2xl w-[100px] text-center bg-stone-50 text-cyan-600"
               >
                 Login
               </Link>
-            </>
+            </div>
           ) : (
-            <div className="flex items-center gap-4 text-white">
-              <span className="font-medium">{userAuth.first_name}</span>
-
-              <div className="relative">
+            <div className="relative">
+              <div
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => setMenuOpen(!menuOpen)}
+              >
                 <img
-                  src={userAuth.profile_picture || "/default.jpg"}
+                  src={user.profile_picture || "/default.jpg"}
                   alt="profile"
-                  className="w-15 h-15 rounded-full cursor-pointer border-2 border-white"
-                  onClick={() => setMenuOpen(!menuOpen)}
+                  className="w-10 h-10 rounded-full border-2 border-white"
                 />
-                {menuOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-md z-50 text-black">
-                    {userAuth.role === "event_organizer" ? (
-                      <div>
-                        <Link
-                          href="/pages/Dashboard"
-                          className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                        >
-                          Dashboard
-                        </Link>
-                        <Link
-                          href="/pages/Profile"
-                          className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                        >
-                          Profile
-                        </Link>
-                      </div>
-                    ) : (
+                <span className="font-medium hidden sm:inline">{user.first_name}</span>
+              </div>
+              {menuOpen && (
+                <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-md z-50 text-black">
+                  {user.role === "event_organizer" ? (
+                    <>
                       <Link
-                        href="/pages/Profile"
+                        href="/pages/dashboard"
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      >
+                        Dashboard
+                      </Link>
+                      <Link
+                        href="/pages/profile"
                         className="block w-full text-left px-4 py-2 hover:bg-gray-100"
                       >
                         Profile
                       </Link>
-                    )}
-                    <button
-                      onClick={handleLogout}
+                    </>
+                  ) : (
+                    <>
+                    <Link
+                      href="/pages/transaction/detail"
                       className="block w-full text-left px-4 py-2 hover:bg-gray-100"
                     >
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
+                      Transactions
+                    </Link>
+                    <Link
+                      href="/pages/profile"
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                    >
+                      Profile
+                    </Link>
+                    </>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

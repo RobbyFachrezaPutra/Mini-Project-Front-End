@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import api from "@/lib/axiosInstance";
 
 const ProfilePage = () => {
   const router = useRouter();
@@ -24,44 +24,13 @@ const ProfilePage = () => {
   });
 
   useEffect(() => {
-    //   const fetchProfileData = async () => {
-    //     try {
-    //       const token = getCookie("acces_token");
-    //       if (!token) {
-    //         setError("No token found, please log in.");
-    //         return;
-    //       }
-
-    //       const response = await axios.get(
-    //         `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/profile/user-profile`,
-    //         {
-    //           headers: {
-    //             Authorization: `Bearer ${token}`,
-    //           },
-    //         }
-    //       );
-
-    //       const user = response.data.data; // Ambil dari data.data
-    //       console.log("Data user:", user);
-
-    //       setUserData(user);
+    const storedUser = JSON.parse(localStorage.getItem("user") || "null");
     setFormData({
-      first_name: userAuth.first_name || "",
-      last_name: userAuth.last_name || "",
-      email: userAuth.email || "",
-      profile_picture: userAuth.profile_picture || "/default-profile.png",
+      first_name: storedUser.first_name || "",
+      last_name: storedUser.last_name || "",
+      email: storedUser.email || "",
+      profile_picture: storedUser.profile_picture || "/default-profile.png",
     });
-
-    //   setLoading(false);
-    //     } catch (err) {
-    //       console.error(" Gagal fetch data:", err);
-    //       setError("Failed to fetch profile data.");
-    //       setLoading(false);
-    //     }
-    //   };
-
-    //   fetchProfileData();
-
     setLoading(false);
   }, [setFormData]);
 
@@ -75,23 +44,18 @@ const ProfilePage = () => {
 
   const handleSave = async () => {
     try {
-      const token = getCookie("acces_token");
+      const token = getCookie("access_token");
 
       if (!token) {
         setError("No token found, please log in.");
         return;
       }
 
-      const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/profile/edit-profile`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/profile/edit-profile`, formData);
 
+      localStorage.removeItem("user");
+      localStorage.setItem("user", JSON.stringify(response.data.data));
       setUserData(response.data.data);
       setIsEditing(false);
       toast.success("Profil berhasil diperbarui!");

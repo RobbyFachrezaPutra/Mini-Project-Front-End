@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "@/lib/axiosInstance";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL; // Menggunakan URL dari .env
 
@@ -9,7 +9,7 @@ export const register = async (data: {
   last_name: string;
   role: string;
 }) => {
-  const response = await axios.post(
+  const response = await api.post(
     `${API_URL}/api/eventorder/auth/register`,
     data
   );
@@ -17,7 +17,7 @@ export const register = async (data: {
 };
 
 export const login = async (data: { email: string; password: string }) => {
-  const response = await axios.post(
+  const response = await api.post(
     `${API_URL}/api/eventorder/auth/login`,
     data
   );
@@ -26,8 +26,8 @@ export const login = async (data: { email: string; password: string }) => {
 
 export const setAuthToken = (token: string) => {
   if (token) {
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   } else {
-    delete axios.defaults.headers.common["Authorization"];
+    delete api.defaults.headers.common["Authorization"];
   }
 };

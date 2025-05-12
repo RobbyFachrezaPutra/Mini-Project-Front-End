@@ -1,4 +1,4 @@
-import EventForm from "@/components/event/detail";
+import EventForm from "@/components/event";
 
 export default function EventFormInput() {
   return (

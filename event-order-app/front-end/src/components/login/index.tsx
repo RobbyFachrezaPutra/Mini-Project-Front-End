@@ -2,13 +2,10 @@
 
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useRouter } from "next/navigation";
-
 import { useAppDispatch } from "@/lib/redux/hooks";
-
-import { login } from "@/lib/redux/slices/authSlice";
-import axios from "axios";
 import * as Yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
+import api from "@/lib/axiosInstance";
 
 // 1. Buat Yup schema sesuai IRegisterParam
 const LoginSchema = Yup.object().shape({
@@ -17,6 +14,7 @@ const LoginSchema = Yup.object().shape({
     .required("Email is required"),
   password: Yup.string().required("Password is required"),
 });
+
 
 export default function LoginPage() {
   const router = useRouter();
@@ -36,13 +34,8 @@ export default function LoginPage() {
           validationSchema={LoginSchema}
           onSubmit={async (values, { resetForm }) => {
             try {
-              const res = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/auth/login`,
-                values,
-                {
-                  withCredentials: true,
-                }
-              );
+              const res = await api.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/auth/login`, values);
 
               if (!res.data) {
                 const errorData = await res.data;
@@ -53,16 +46,7 @@ export default function LoginPage() {
                 toast.success("Berhasil login!");
                 console.log("User data:", res.data);
                 const responseData = res.data;
-                dispatch(
-                  login({
-                    email: responseData.data.email,
-                    first_name: responseData.data.first_name,
-                    last_name: responseData.data.last_name,
-                    profile_picture: responseData.data.profile_picture,
-                    role: responseData.data.role,
-                    isLogin: true,
-                  })
-                );
+                localStorage.setItem("user", JSON.stringify(responseData.data));
                 resetForm();
                 router.push("/");
               }
