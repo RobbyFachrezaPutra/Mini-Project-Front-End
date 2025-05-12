@@ -193,7 +193,6 @@ const ProfilePage = () => {
       
       localStorage.removeItem("user");
       localStorage.setItem("user", JSON.stringify(response.data.data));
-      setUserData(response.data.data);
       setIsEditing(false);
       toast.success("Profil berhasil diperbarui!");
     } catch (err) {
