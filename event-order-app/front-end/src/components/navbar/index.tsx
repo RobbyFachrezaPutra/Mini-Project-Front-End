@@ -98,7 +98,7 @@ const Navbar = () => {
                     {userAuth.role === "event_organizer" ? (
                       <div>
                         <Link
-                          href="/pages/Dashboard"
+                          href="/pages/dashboard"
                           className="block w-full text-left px-4 py-2 hover:bg-gray-100"
                         >
                           Dashboard
