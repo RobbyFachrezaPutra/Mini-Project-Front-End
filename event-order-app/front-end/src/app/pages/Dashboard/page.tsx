@@ -1,7 +1,5 @@
-import EventForm from "@/components/event";
+import DashboardPage from "@/components/dashboard";
 
-export default function EventFormInput() {
-  return (
-    <EventForm />
-)
+export default function Dashboard() {
+  return <DashboardPage />;
 }

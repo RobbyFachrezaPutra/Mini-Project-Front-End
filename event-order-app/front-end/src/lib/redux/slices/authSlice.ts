@@ -6,6 +6,7 @@ interface IAuth {
   last_name: string;
   profile_picture: string;
   role: string;
+  referral_code: string;
   isLogin: boolean;
 }
 
@@ -15,6 +16,7 @@ const initialState: IAuth = {
   last_name: "",
   profile_picture: "",
   role: "",
+  referral_code: "",
   isLogin: false,
 };
 
@@ -28,6 +30,7 @@ export const authSlice = createSlice({
       state.last_name = action.payload.last_name;
       state.profile_picture = action.payload.profile_picture; // Menyimpan image dari payload
       state.role = action.payload.role;
+      state.referral_code = action.payload.referral_code;
       state.isLogin = true;
     },
     logout: (state: IAuth) => {

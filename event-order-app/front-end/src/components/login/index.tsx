@@ -34,25 +34,56 @@ export default function LoginPage() {
           validationSchema={LoginSchema}
           onSubmit={async (values, { resetForm }) => {
             try {
-              const res = await api.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/auth/login`, values);
+              const res = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/auth/login`,
+                values,
+                {
+                  withCredentials: true,
+                  validateStatus: (status) => status < 500,
+                }
+              );
 
+              console.log("Full response:", res); // DEBUG LINE 🚨
+
+              // 1. Cek jika response tidak valid
               if (!res.data) {
-                const errorData = await res.data;
-                toast.error(
-                  `Gagal: ${errorData.message || "Terjadi kesalahan"}`
-                );
-              } else {
+                toast.error("Terjadi kesalahan server");
+                return;
+              }
+
+              // 2. Jika ada data.user, anggap sukses
+              if (res.data.data?.email) {
+                // Cek field spesifik
                 toast.success("Berhasil login!");
-                console.log("User data:", res.data);
-                const responseData = res.data;
-                localStorage.setItem("user", JSON.stringify(responseData.data));
-                resetForm();
+                dispatch(
+                  login({
+                    email: res.data.data.email,
+                    first_name: res.data.data.first_name,
+                    last_name: res.data.data.last_name,
+                    profile_picture: res.data.data.profile_picture,
+                    role: res.data.data.role,
+                    referral_code: res.data.data.referral_code,
+                    isLogin: true,
+                  })
+                );
                 router.push("/");
               }
+              // 3. Jika ada message error
+              else if (res.data.message) {
+                toast.error(res.data.message);
+              }
+              // 4. Fallback
+              else {
+                toast.error("Login gagal (response tidak valid)");
+                console.error("Invalid response structure:", res.data);
+              }
             } catch (error) {
-              console.error(error);
-              alert("Gagal koneksi ke server");
+              console.error("Login error:", error);
+              toast.error(
+                axios.isAxiosError(error)
+                  ? error.response?.data?.message || "Terjadi kesalahan"
+                  : "Gagal terhubung ke server"
+              );
             }
           }}
         >
