@@ -28,7 +28,7 @@ const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-sky-50">
       {/* Navbar */}
-      <Navbar />
+      {/* <Navbar /> */}
 
       {/* Sidebar */}
       <Sidebar
