@@ -22,9 +22,6 @@ const ProfilePage = () => {
     last_name: "",
     email: "",
     profile_picture: "",
-    password: "", // New password field
-    new_password: "", // For password change
-    confirm_password: "", // For password confirmation
     referral_code: "", // New referral code field
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -58,10 +55,7 @@ const ProfilePage = () => {
       last_name: storedUser.last_name || "",
       email: storedUser.email || "",
       profile_picture: storedUser.profile_picture || "/default-profile.png",
-      password: "",
-      new_password: "",
-      confirm_password: "",
-      referral_code: userAuth.referral_code || "",      
+      referral_code: storedUser.referral_code || "",
     });
 
     //   setLoading(false);
@@ -108,7 +102,7 @@ const ProfilePage = () => {
     if (!confirm("Yakin ingin menghapus foto profil?")) return;
 
     try {
-      const token = getCookie("acces_token");
+      const token = getCookie("access_token");
       if (!token) {
         toast.error("Silakan login terlebih dahulu");
         return;
@@ -182,15 +176,13 @@ const ProfilePage = () => {
       }
 
       const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/profile/edit-profile`,
-        formData,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/profile/update-profile`,
+        formPayload,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true,
         }
       );
-      
+
       localStorage.removeItem("user");
       localStorage.setItem("user", JSON.stringify(response.data.data));
       setIsEditing(false);
