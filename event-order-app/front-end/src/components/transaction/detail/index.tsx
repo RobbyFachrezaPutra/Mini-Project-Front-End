@@ -51,15 +51,15 @@ export default function DetailTransaction() {
                 <div className="p-4 flex-grow flex flex-col justify-between">
                   <h2 className="text-lg font-semibold mb-1 line-clamp-2">{transaction.code}</h2>
                   <div>
-                    <p className="text-sm text-gray-500 truncate">📍 {transaction.status}</p>
-                    <p className="text-sm text-gray-500">💵 Rp {transaction.final_price}</p>
-                  </div>
+                    <p className="text-sm text-gray-500 truncate">Status {transaction.status}</p>
+                    💵 {transaction.final_price?.toLocaleString("id-ID", { style: "currency", currency: "IDR" })}
+                    </div>
                 </div>
                 {transaction.status == "pending" ? (
                   <div> 
                     <button
                       type="button"
-                      className="w-[100px] px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md"
+                      className="w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md"
                       onClick={() => {
                         localStorage.setItem('latest_transaction', JSON.stringify(transaction));
                         setShowModal(true);

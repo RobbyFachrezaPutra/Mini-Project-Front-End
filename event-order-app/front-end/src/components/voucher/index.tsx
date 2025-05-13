@@ -56,13 +56,13 @@ export default function VoucherDialog({
           >
           {({ values, setFieldValue, setFieldTouched }) => (
             <Form className="space-y-4">
-              <Field name="name">
+              <Field name="code">
                 {({ field }: any) => (
-                  <input {...field} className="w-full p-2 border border-gray-300 rounded-md" placeholder="Voucher Name" />
+                  <input {...field} className="w-full p-2 border border-gray-300 rounded-md" placeholder="Voucher Code" />
                 )}
               </Field>
               <ErrorMessage
-                name="name"
+                name="code"
                 component="div"
                 className="text-red-500 text-sm"
               />              

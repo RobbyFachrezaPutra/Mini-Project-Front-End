@@ -10,7 +10,7 @@ import api from "@/lib/axiosInstance";
 import { toast } from "react-toastify";
 import { IUserParam } from "@/interface/user.interface";
 import { useRouter } from "next/navigation";
-import PaymentInfoModal from "../transaction/info";
+import PaymentInfoModal from "../info";
 import { date } from "yup";
 
 interface BuyTicketDialogProps {
@@ -243,7 +243,7 @@ export default function BuyTicketDialog({
                   {selectedVoucher?.discount_amount.toLocaleString()}
                 </p>
                 <p className="text-lg font-semibold">
-                  Discount Point : {pointUsed.toLocaleString()}%
+                  Discount Point : {pointUsed.toLocaleString()}
                 </p>
                 <p className="text-lg font-semibold">
                   Discount Coupon :{" "}
@@ -269,7 +269,6 @@ export default function BuyTicketDialog({
                   >
                     <div className="flex justify-between">
                       <div>
-                        {voucher.code}
                         <h2 className="font-semibold text-lg">
                           {voucher.code}
                         </h2>
@@ -282,7 +281,7 @@ export default function BuyTicketDialog({
                     </div>
                   </div>
                 ))}
-                {coupon && (
+                {coupon[0] && (
                   <div className="mb-4">
                     <label className="flex items-center">
                       <input

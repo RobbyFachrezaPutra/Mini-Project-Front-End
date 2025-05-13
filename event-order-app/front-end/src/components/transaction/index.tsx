@@ -8,7 +8,7 @@ import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
-import BuyTicketDialog from "../dialog";
+import BuyTicketDialog from "./dialog";
 
 export default function EventTransaction() {
   const params = useParams();
@@ -80,7 +80,7 @@ export default function EventTransaction() {
         />
 
         {/* Merender konten Tiptap */}
-        <div className="mt-4 text-gray-700 leading-relaxed">
+        <div className="mt-4 text-gray-700 leading-relaxed border-2 border-gray-400 rounded shadow p-3">
           <EditorContent editor={editor} /> {/* Render konten Tiptap */}
         </div>
       </div>
