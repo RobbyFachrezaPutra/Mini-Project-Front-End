@@ -32,7 +32,7 @@ const ResetPasswordPage = () => {
     }
 
     try {
-      const token = getCookie("acces_token");
+      const token = getCookie("access_token");
       if (!token) {
         toast.error("Silakan login terlebih dahulu");
         router.push("/auth/login");

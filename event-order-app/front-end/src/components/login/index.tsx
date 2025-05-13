@@ -16,7 +16,6 @@ const LoginSchema = Yup.object().shape({
   password: Yup.string().required("Password is required"),
 });
 
-
 export default function LoginPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -56,7 +55,7 @@ export default function LoginPage() {
               if (res.data.data?.email) {
                 // Cek field spesifik
                 toast.success("Berhasil login!");
-                localStorage.setItem("user", JSON.stringify(res.data.data))
+                localStorage.setItem("user", JSON.stringify(res.data.data));
                 dispatch(
                   login({
                     email: res.data.data.email,

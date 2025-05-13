@@ -1,94 +1,82 @@
 import { useState, useEffect } from "react";
 import TransactionDetailModal from "../transactionModal.tsx";
 import { Transaction, TransactionStatus } from "@/type/type";
+import axios from "axios";
 
 const TransactionTab = () => {
-  // Transaction data
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    {
-      id: "1",
-      event: "DEWA Concert",
-      ticketType: "VIP",
-      quantity: 2,
-      quota: 10,
-      status: "pending",
-      user: {
-        name: "John Doe",
-        email: "john@example.com",
-        phone: "08123456789",
-      },
-      paymentProof: "/payment-proof.jpg",
-      date: "25 Dec 2023",
-      paymentDue: new Date(Date.now() + 60000),
-    },
-    {
-      id: "2",
-      event: "Coldplay Tour",
-      ticketType: "Regular",
-      quantity: 4,
-      quota: 100,
-      status: "pending",
-      user: {
-        name: "Jane Smith",
-        email: "jane@example.com",
-        phone: "08234567890",
-      },
-      paymentProof: "/payment-proof.jpg",
-      date: "15 Jan 2024",
-      paymentDue: new Date(Date.now() - 1000), // Already expired (1 second ago)
-    },
-    {
-      id: "3",
-      event: "Coldplay Tour",
-      ticketType: "Regular",
-      quantity: 4,
-      quota: 100,
-      status: "pending",
-      user: {
-        name: "Jane Smith",
-        email: "jane@example.com",
-        phone: "08234567890",
-      },
-      paymentProof: "/payment-proof.jpg",
-      date: "15 Jan 2024",
-      paymentDue: new Date(Date.now() + 10000),
-    },
-  ]);
-
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
 
-  // Handle approval with quota management
-  const handleApprove = (id: string) => {
-    setTransactions((prev) =>
-      prev.map((tx) => {
-        if (tx.id === id) {
-          return {
-            ...tx,
-            status: "approved",
-            quota: tx.quota - tx.quantity, // Reduce quota
-          };
-        }
-        return tx;
-      })
-    );
-    setSelectedTx(null);
+  // Fetch transactions from backend
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const response = await axios.get("/api/transactions");
+        // Map backend data to frontend format
+        const mappedTransactions = response.data.data.map((tx: any) => ({
+          id: tx.id.toString(),
+          event: tx.event?.title || "Unknown Event", // Assuming event is included in the response
+          ticketType: tx.details?.[0]?.ticket?.type || "Regular", // Assuming details include ticket info
+          quantity:
+            tx.details?.reduce(
+              (sum: number, detail: any) => sum + detail.qty,
+              0
+            ) || 0,
+          quota: tx.event?.available_seats || 0, // Assuming event includes available_seats
+          status: tx.status.toLowerCase(), // Convert to match your frontend status
+          user: {
+            name: tx.user?.name || "Unknown User", // Assuming user info is included
+            email: tx.user?.email || "",
+            phone: tx.user?.phone || "",
+          },
+          paymentProof: tx.payment_proof || "",
+          date: new Date(tx.created_at).toLocaleDateString(),
+          paymentDue: new Date(
+            new Date(tx.created_at).getTime() + 24 * 60 * 60 * 1000
+          ), // 24 hours after creation
+        }));
+        setTransactions(mappedTransactions);
+      } catch (err) {
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
+
+  // Handle approval
+  const handleApprove = async (id: string) => {
+    try {
+      await axios.put(`/api/transactions/${id}`, {
+        status: "approved",
+      });
+
+      setTransactions((prev) =>
+        prev.map((tx) => (tx.id === id ? { ...tx, status: "approved" } : tx))
+      );
+      setSelectedTx(null);
+    } catch (err) {
+      console.error("Failed to approve transaction:", err);
+    }
   };
 
-  // Handle rejection with quota restoration
-  const handleReject = (id: string) => {
-    setTransactions((prev) =>
-      prev.map((tx) => {
-        if (tx.id === id) {
-          return {
-            ...tx,
-            status: "rejected",
-            quota: tx.quota + tx.quantity, // Restore quota
-          };
-        }
-        return tx;
-      })
-    );
-    setSelectedTx(null);
+  // Handle rejection
+  const handleReject = async (id: string) => {
+    try {
+      await axios.put(`/api/transactions/${id}`, {
+        status: "rejected",
+      });
+
+      setTransactions((prev) =>
+        prev.map((tx) => (tx.id === id ? { ...tx, status: "rejected" } : tx))
+      );
+      setSelectedTx(null);
+    } catch (err) {
+      console.error("Failed to reject transaction:", err);
+    }
   };
 
   // Status color styling
@@ -110,8 +98,6 @@ const TransactionTab = () => {
   // Auto cancel for expired payments
   useEffect(() => {
     const checkExpiredPayments = () => {
-      console.log("Checking for expired transactions...");
-
       setTransactions((prev) =>
         prev.map((tx) => {
           if (
@@ -119,14 +105,10 @@ const TransactionTab = () => {
             tx.paymentDue &&
             new Date() > tx.paymentDue
           ) {
-            console.log(
-              `Canceling transaction ${tx.id} due to payment timeout`
-            );
             return {
               ...tx,
               status: "canceled",
               canceledReason: "Payment timeout",
-              quota: tx.quota + tx.quantity,
             };
           }
           return tx;
@@ -134,22 +116,21 @@ const TransactionTab = () => {
       );
     };
 
-    // Run immediately on component mount
     checkExpiredPayments();
-
-    // Check every minute (60000ms)
     const interval = setInterval(checkExpiredPayments, 60000);
-
-    // Cleanup interval on component unmount
     return () => clearInterval(interval);
   }, []);
 
+  if (loading) return <div>Loading transactions...</div>;
+  if (error) return <div>Error: {error}</div>;
+
   return (
-    <div className="p-4">
+    <div>
       <h1 className="text-3xl font-bold text-sky-800 mb-6">Transactions</h1>
 
       <div className="border rounded-lg shadow-xl overflow-hidden bg-stone-50">
         <table className="w-full">
+          {/* Table headers remain the same */}
           <thead className="bg-sky-100">
             <tr>
               <th className="p-4 text-left text-sm font-semibold text-sky-800">
@@ -172,6 +153,8 @@ const TransactionTab = () => {
               </th>
             </tr>
           </thead>
+
+          {/* Table body */}
           <tbody className="divide-y divide-gray-200">
             {transactions.map((tx) => (
               <tr key={tx.id} className="hover:bg-gray-50">
@@ -183,10 +166,7 @@ const TransactionTab = () => {
                       tx.status
                     )}`}
                   >
-                    {tx.status === "pending" && "Pending"}
-                    {tx.status === "approved" && "Approved"}
-                    {tx.status === "rejected" && "Rejected"}
-                    {tx.status === "canceled" && "Canceled"}
+                    {tx.status}
                   </span>
                   {tx.status === "canceled" && tx.canceledReason && (
                     <p className="text-xs text-gray-500 mt-1">

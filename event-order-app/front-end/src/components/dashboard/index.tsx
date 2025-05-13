@@ -27,9 +27,6 @@ const DashboardPage = () => {
 
   return (
     <div className="min-h-screen bg-sky-50">
-      {/* Navbar */}
-      {/* <Navbar /> */}
-
       {/* Sidebar */}
       <Sidebar
         activeTab={activeTab}
@@ -38,7 +35,7 @@ const DashboardPage = () => {
       />
 
       {/* Konten Utama */}
-      <main className="ml-64 p-8 pt-24">
+      <main className="ml-64 p-8 pt-8">
         {/* Events Tab */}
         {activeTab === "events" && <MyEventsTab />}
 
