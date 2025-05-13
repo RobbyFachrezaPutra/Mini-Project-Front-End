@@ -14,7 +14,7 @@ const Sidebar = ({
   const router = useRouter();
 
   return (
-    <div className="w-64 bg-white border-r fixed h-full pt-16 p-4">
+    <div className="w-64 bg-white border-r fixed h-full pt-6 p-4">
       <button
         onClick={() => router.push("/")}
         className="mb-4 pt-4 text-sky-600 hover:underline"
@@ -44,7 +44,7 @@ const Sidebar = ({
             : "hover:bg-gray-100"
         }`}
       >
-        Transactions ({pendingTransactions})
+        Transactions
       </button>
 
       {/* Statistics */}

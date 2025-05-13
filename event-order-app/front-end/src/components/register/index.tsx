@@ -58,7 +58,7 @@ export default function RegisterPage() {
               } else {
                 alert("Berhasil daftar!");
                 resetForm();
-                router.push("/pages/Login");
+                router.push("/pages/login");
               }
             } catch (error) {
               console.error(error);
