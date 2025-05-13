@@ -64,47 +64,59 @@ export default function HomePage() {
   const eventsToShow = keyword ? eventsSearch : events;
 
   return (
-    <div className="pt-[80px] px-4 sm:pt-[96px]">
+    <div className="pt-[300px] px-4 md:pt-[200px] lg:pt-[200px] mb-[200px]">
       <div className="flex flex-col space-y-6">
         {/* Banner */}
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="w-full h-40 sm:h-52 md:h-60 bg-gradient-to-r from-purple-500 to-indigo-600 text-white flex items-center justify-center rounded-2xl shadow-lg">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center px-2">Selamat Datang di EventSphere!</h1>
+          <div className="text-center px-2">
+            <h1 className="text-2xl md:text-4xl font-bold">Selamat Datang di Tiketin.com!</h1>
+            <h1 className="text-2xl md:text-4xl font-bold mt-2">Bukan Sekadar Event. Ini Movement!</h1>
+          </div>
           </div>
         </div>
 
         {/* Event Cards */}
         <div className="flex justify-center">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-            {eventsToShow.map((event) => (
-              <Link
-                key={event.id}
-                href={`/pages/transaction/${event.id}`}
-                target="_blank"
-                rel="noopener noreferrer">
-                <div
-                  className="cursor-pointer bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow w-[190px] h-[310px] flex flex-col"
-                >
-                  <img src={event.banner_url} alt={event.name} className="w-full h-40 object-cover" />
-                  <div className="p-4 flex-grow flex flex-col justify-between">
-                    <h2 className="text-lg font-semibold mb-1 line-clamp-2">{event.name}</h2>
-                    <div>
-                      <p className="text-sm text-gray-500 truncate">📍 {event.location}</p>
-                      <p className="text-sm text-gray-500">From : 📅 {event.start_date ? new Date(event.start_date).toLocaleDateString() : null}</p>
-                      <p className="text-sm text-gray-500">To   :📅 {event.end_date ? new Date(event.end_date).toLocaleDateString() : null}</p>
-                      <p className="text-sm text-gray-700 font-medium mt-2">🎟️ {event.available_seats}</p>
-                      <p className="text-sm text-gray-700 font-medium mt-2">
-                        💵 Rp
-                        {Math.min(...event.tickets.map((t) => t.price)).toLocaleString()}
-                      </p>
+            {eventsToShow.length === 0 ? (
+              <div className="text-center text-gray-500 py-10 text-lg font-medium">
+                Tidak ada event ditemukan.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">            
+                {eventsToShow.map((event) => (
+                  <Link
+                    key={event.id}
+                    href={`/pages/transaction/${event.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <div className="cursor-pointer bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow w-[190px] h-[310px] flex flex-col">
+                      <img src={event.banner_url} alt={event.name} className="w-full h-35 object-cover" />
+                      <div className="p-4 flex-grow flex flex-col justify-between">
+                        <h2 className="text-lg font-semibold mb-1 line-clamp-2">{event.name}</h2>
+                        <div>
+                          <p className="text-sm text-gray-500 truncate">📍 {event.location}</p>
+                          <p className="text-sm text-gray-500">
+                            From : 📅 {event.start_date ? new Date(event.start_date).toLocaleDateString() : null}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            To   : 📅 {event.end_date ? new Date(event.end_date).toLocaleDateString() : null}
+                          </p>
+                          <p className="text-sm text-gray-700 font-medium mt-2">🎟️ {event.available_seats}</p>
+                          <p className="text-sm text-gray-700 font-medium mt-2">
+                            💵 Rp
+                            {Math.min(...event.tickets.map((t) => t.price)).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      </div>
     </div>
   );
 }

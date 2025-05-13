@@ -67,55 +67,28 @@ const Navbar = () => {
     e.preventDefault();
     if (!search.trim()) return;
 
-    try {
-      router.push(`/pages/homepage?keyword=${encodeURIComponent(search)}&category=${encodeURIComponent(category)}&location=${encodeURIComponent(location)}`);
-    } catch (err) {
-      router.push(`/pages/homepage?keyword=${encodeURIComponent(search)}&category=${encodeURIComponent(category)}&location=${encodeURIComponent(location)}`);
-    }
+    router.push(`/pages/homepage?keyword=${encodeURIComponent(search)}`);
   };
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 px-4 py-2 shadow-lg backdrop-blur-lg border-b-2 border-[#fffdf6] bg-sky-600">
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <Link href="/" className="text-stone-50 text-2xl">
+        <Link href="/" className="text-stone-50 text-4xl">
           Tiketin.com
         </Link>
 
-        <form onSubmit={handleSearchSubmit} className="w-full flex flex-col md:flex-row md:items-center gap-2">
+        <form
+          onSubmit={handleSearchSubmit}
+          className="w-full flex justify-center items-center py-4"
+        >
           <input
             ref={inputRef}
             type="text"
             placeholder="Search events..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-4 pr-4 py-2 rounded-xl text-black border-2 border-stone-50 focus:outline-none focus:ring-2 focus:ring-white w-full md:w-64"
+            className="pl-4 pr-4 py-2 rounded-xl text-black border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full max-w-[500px]"
           />
-          <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="py-2 px-3 rounded-xl text-black border-2 border-stone-50 bg-white w-full sm:w-auto"
-            >
-              <option value="">All Categories</option>
-              {categories.map((cat, idx) => (
-                <option key={cat.id} value={cat.name}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-            <select
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="py-2 px-3 rounded-xl text-black border-2 border-stone-50 bg-white w-full sm:w-auto"
-            >
-              <option value="">All Locations</option>
-              {locations.map((loc, idx) => (
-                <option key={idx} value={loc}>
-                  {loc}
-                </option>
-              ))}
-            </select>
-          </div>
         </form>
 
         <div className="flex items-center gap-4 text-stone-50 relative self-end md:self-auto">
@@ -143,9 +116,9 @@ const Navbar = () => {
                 <img
                   src={user.profile_picture || "/default.jpg"}
                   alt="profile"
-                  className="w-10 h-10 rounded-full border-2 border-white"
+                  className="w-15 h-15 rounded-full border-2 border-white"
                 />
-                <span className="font-medium hidden sm:inline">{user.first_name}</span>
+                <span className="font-medium hidden sm:inline text-3xl">{user.first_name}</span>
               </div>
               {menuOpen && (
                 <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-md z-50 text-black">

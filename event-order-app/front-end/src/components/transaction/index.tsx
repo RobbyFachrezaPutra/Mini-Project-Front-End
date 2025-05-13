@@ -9,6 +9,7 @@ import Highlight from "@tiptap/extension-highlight";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 import BuyTicketDialog from "./dialog";
+import Link from "next/link";
 
 export default function EventTransaction() {
   const params = useParams();
@@ -70,6 +71,16 @@ export default function EventTransaction() {
   if (!event) return <div>Loading...</div>;
 
   return (
+    <>
+      <div className="mb-4">
+        <Link
+          href="/"
+          className="inline-flex items-center text-sm text-blue-600 hover:underline"
+        >
+          ← Back to Home
+        </Link>
+      </div>        
+
     <div className="flex flex-col lg:flex-row justify-center mx-auto mt-[200px] p-6 gap-6 max-w-6xl">
       {/* Kolom kiri: gambar */}
       <div className="lg:w-2/3 w-full">
@@ -148,5 +159,6 @@ export default function EventTransaction() {
         eventId={event.id}
       />
     </div>
+    </>
   );
 }

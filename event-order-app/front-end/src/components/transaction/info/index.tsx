@@ -5,7 +5,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/axiosInstance';
 import { toast } from 'react-toastify';
-import ITransactionParam from '@/interface/transaction.interface';
+import { ITransactionParam }  from '@/interface/transaction.interface';
 
 interface PaymentInfoModalProps {
   isOpen: boolean;
@@ -18,8 +18,18 @@ export default function PaymentInfoModal({ isOpen, onClose }: PaymentInfoModalPr
   const router = useRouter();
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem('latest_transaction') || '{}');
-    setTransaction(data);
+    const stored = localStorage.getItem('latest_transaction');
+    if (!stored) return;
+  
+    try {
+      const data = JSON.parse(stored);
+      if (data && data.id) {
+        setTransaction(data);
+      }
+    } catch (err) {
+      console.error("Gagal parse localStorage", err);
+      setTransaction(null);
+    }
   }, []);
 
   const handleSubmit = async () => {
@@ -40,7 +50,7 @@ export default function PaymentInfoModal({ isOpen, onClose }: PaymentInfoModalPr
       toast.success("Terimakasih atas pembayaran anda");
       localStorage.removeItem("latest_transaction");
       onClose();
-      router.push("/pages/transaction/info");
+      router.push("/");
     } catch (err) {
       toast.error("Gagal mengunggah bukti bayar. harap coba lagi!.");
       console.error(err);
@@ -64,7 +74,7 @@ export default function PaymentInfoModal({ isOpen, onClose }: PaymentInfoModalPr
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black bg-opacity-40" />
+          <div className="fixed inset-0 bg-transparent bg-opacity-40" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
