@@ -108,7 +108,7 @@ const MyEventsTab = () => {
           onClick={() => window.location.reload()}
           className="ml-4 px-3 py-1 bg-sky-100 text-sky-800 rounded"
         >
-          Retry
+          Retry.
         </button>
       </div>
     );
