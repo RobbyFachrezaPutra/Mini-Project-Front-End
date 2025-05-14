@@ -8,9 +8,9 @@ export type TransactionStatus =
 export type Transaction = {
   id: string;
   event: string;
-  ticketType: "VIP" | "Regular";
+  ticketType: string;
   quantity: number;
-  quota: number;
+  quota?: number;
   status: TransactionStatus;
   user: {
     name: string;

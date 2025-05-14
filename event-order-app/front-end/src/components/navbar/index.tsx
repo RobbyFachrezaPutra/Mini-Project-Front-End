@@ -22,7 +22,7 @@ const Navbar = () => {
   const searchParams = useSearchParams();
   const keywordFromUrl = searchParams.get("keyword") || "";
   const [search, setSearch] = useState(keywordFromUrl);
-  const refreshUser = () => setReload(prev => !prev);
+  const refreshUser = () => setReload((prev) => !prev);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -54,10 +54,11 @@ const Navbar = () => {
 
   const handleSearchAuto = async (query: string) => {
     try {
-      if(query) router.push(`/pages/homepage?keyword=${encodeURIComponent(query)}`)
-        else {
-          router.push('/')
-        }
+      if (query)
+        router.push(`/pages/homepage?keyword=${encodeURIComponent(query)}`);
+      else {
+        router.push("/");
+      }
     } catch (err) {
       toast.error("Gagal mencari data");
     }
@@ -118,7 +119,9 @@ const Navbar = () => {
                   alt="profile"
                   className="w-15 h-15 rounded-full border-2 border-white"
                 />
-                <span className="font-medium hidden sm:inline text-3xl">{user.first_name}</span>
+                <span className="font-medium hidden sm:inline text-3xl">
+                  {user.first_name}
+                </span>
               </div>
               {menuOpen && (
                 <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-md z-50 text-black">
@@ -139,18 +142,18 @@ const Navbar = () => {
                     </>
                   ) : (
                     <>
-                    <Link
-                      href="/pages/transaction/detail"
-                      className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                    >
-                      Transactions
-                    </Link>
-                    <Link
-                      href="/pages/profile"
-                      className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                    >
-                      Profile
-                    </Link>
+                      <Link
+                        href="/pages/transaction/detail"
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      >
+                        Transactions
+                      </Link>
+                      <Link
+                        href="/pages/profile"
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      >
+                        Profile
+                      </Link>
                     </>
                   )}
                   <button

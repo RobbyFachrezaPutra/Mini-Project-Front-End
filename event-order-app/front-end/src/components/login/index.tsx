@@ -43,7 +43,7 @@ export default function LoginPage() {
                 }
               );
 
-              console.log("Full response:", res); // DEBUG LINE 🚨
+              console.log("Full response:", res);
 
               // 1. Cek jika response tidak valid
               if (!res.data) {
