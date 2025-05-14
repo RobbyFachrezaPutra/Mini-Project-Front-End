@@ -87,7 +87,11 @@ const TransactionTab = () => {
   }, []);
 
   // Local state update only - no API call
-  const handleApprove = (txId: string) => {
+  const handleApprove = async (txId: string) => {
+    await axios.put(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/transactions/approve/${txId}`
+    );
+
     setTransactions((prevTransactions) =>
       prevTransactions.map((tx) =>
         tx.id === txId ? { ...tx, status: "approved" } : tx
@@ -222,7 +226,9 @@ const TransactionTab = () => {
                         {tx.status === "pending" && (
                           <div className="flex space-x-2">
                             <button
-                              onClick={() => handleApprove(tx.id)}
+                              onClick={() => {
+                                handleApprove(tx.id);
+                              }}
                               className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs"
                             >
                               Approve
