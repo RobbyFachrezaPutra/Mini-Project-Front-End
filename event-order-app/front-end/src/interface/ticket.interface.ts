@@ -1,4 +1,4 @@
-import ITransactionParam from "./transaction.interface";
+import { ITransactionParam } from "./transaction.interface";
 
 export interface ITicketParam {
   id: number;

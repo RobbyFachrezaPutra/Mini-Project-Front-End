@@ -1,205 +1,308 @@
-import { useState, useEffect } from "react";
-import TransactionDetailModal from "../transactionModal.tsx";
-import { Transaction, TransactionStatus } from "@/type/type";
+"use client";
+
+import { useEffect, useState } from "react";
 import axios from "axios";
+
+type TransactionStatus =
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "waiting_for_payment";
+
+interface Transaction {
+  id: string;
+  event: string;
+  ticketType: string;
+  quantity: number;
+  status: TransactionStatus;
+  paymentProof: string;
+  date: string;
+  user: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+}
+
+interface IUserParam {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
 
 const TransactionTab = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [currentImage, setCurrentImage] = useState("");
 
-  // Fetch transactions from backend
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const response = await axios.get("/api/transactions");
-        // Map backend data to frontend format
-        const mappedTransactions = response.data.data.map((tx: any) => ({
+  const fetchTransactions = async () => {
+    const user = JSON.parse(
+      localStorage.getItem("user") || "null"
+    ) as IUserParam;
+    if (!user?.id) {
+      setError("Authentication required");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/transactions/by-organizer/${user.id}`,
+        { withCredentials: true }
+      );
+
+      const mapped = response.data.data.map(
+        (tx: any): Transaction => ({
           id: tx.id.toString(),
-          event: tx.event?.title || "Unknown Event", // Assuming event is included in the response
-          ticketType: tx.details?.[0]?.ticket?.type || "Regular", // Assuming details include ticket info
-          quantity:
-            tx.details?.reduce(
-              (sum: number, detail: any) => sum + detail.qty,
-              0
-            ) || 0,
-          quota: tx.event?.available_seats || 0, // Assuming event includes available_seats
-          status: tx.status.toLowerCase(), // Convert to match your frontend status
+          event: tx.event || "Unknown Event",
+          ticketType: tx.ticketType || "Unknown",
+          quantity: tx.quantity || 0,
+          status: tx.status
+            .toLowerCase()
+            .replace(/\s+/g, "_") as TransactionStatus,
+          paymentProof: tx.paymentProof || "",
+          date: new Date(tx.createdAt).toISOString().slice(0, 10),
           user: {
-            name: tx.user?.name || "Unknown User", // Assuming user info is included
-            email: tx.user?.email || "",
-            phone: tx.user?.phone || "",
+            name: tx.name || "Unknown User",
+            email: tx.email || "",
+            phone: tx.phone || "",
           },
-          paymentProof: tx.payment_proof || "",
-          date: new Date(tx.created_at).toLocaleDateString(),
-          paymentDue: new Date(
-            new Date(tx.created_at).getTime() + 24 * 60 * 60 * 1000
-          ), // 24 hours after creation
-        }));
-        setTransactions(mappedTransactions);
-      } catch (err) {
-      } finally {
-        setLoading(false);
-      }
-    };
+        })
+      );
 
+      setTransactions(mapped);
+    } catch (err: any) {
+      console.error("Failed to fetch transactions:", err);
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchTransactions();
   }, []);
 
-  // Handle approval
-  const handleApprove = async (id: string) => {
-    try {
-      await axios.put(`/api/transactions/${id}`, {
-        status: "approved",
-      });
+  // Local state update only - no API call
+  const handleApprove = async (txId: string) => {
+    await axios.put(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/transactions/approve/${txId}`
+    );
 
-      setTransactions((prev) =>
-        prev.map((tx) => (tx.id === id ? { ...tx, status: "approved" } : tx))
-      );
-      setSelectedTx(null);
-    } catch (err) {
-      console.error("Failed to approve transaction:", err);
-    }
+    setTransactions((prevTransactions) =>
+      prevTransactions.map((tx) =>
+        tx.id === txId ? { ...tx, status: "approved" } : tx
+      )
+    );
   };
 
-  // Handle rejection
-  const handleReject = async (id: string) => {
-    try {
-      await axios.put(`/api/transactions/${id}`, {
-        status: "rejected",
-      });
-
-      setTransactions((prev) =>
-        prev.map((tx) => (tx.id === id ? { ...tx, status: "rejected" } : tx))
-      );
-      setSelectedTx(null);
-    } catch (err) {
-      console.error("Failed to reject transaction:", err);
-    }
+  // Local state update only - no API call
+  const handleReject = (txId: string) => {
+    setTransactions((prevTransactions) =>
+      prevTransactions.map((tx) =>
+        tx.id === txId ? { ...tx, status: "rejected" } : tx
+      )
+    );
   };
 
-  // Status color styling
+  const openImageModal = (imageUrl: string) => {
+    setCurrentImage(imageUrl);
+    setShowModal(true);
+  };
+
   const getStatusColor = (status: TransactionStatus) => {
     switch (status) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
       case "approved":
         return "bg-green-100 text-green-800";
       case "rejected":
         return "bg-red-100 text-red-800";
-      case "canceled":
-        return "bg-purple-100 text-purple-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "waiting_for_payment":
+        return "bg-blue-100 text-blue-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
-  // Auto cancel for expired payments
-  useEffect(() => {
-    const checkExpiredPayments = () => {
-      setTransactions((prev) =>
-        prev.map((tx) => {
-          if (
-            tx.status === "pending" &&
-            tx.paymentDue &&
-            new Date() > tx.paymentDue
-          ) {
-            return {
-              ...tx,
-              status: "canceled",
-              canceledReason: "Payment timeout",
-            };
-          }
-          return tx;
-        })
-      );
-    };
-
-    checkExpiredPayments();
-    const interval = setInterval(checkExpiredPayments, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  if (loading) return <div>Loading transactions...</div>;
-  if (error) return <div>Error: {error}</div>;
-
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-sky-800 mb-6">Transactions</h1>
+    <div className="p-6 bg-sky-50 min-h-screen">
+      <h1 className="text-3xl font-bold text-sky-800 mb-6">
+        Transaction Management
+      </h1>
 
-      <div className="border rounded-lg shadow-xl overflow-hidden bg-stone-50">
-        <table className="w-full">
-          {/* Table headers remain the same */}
-          <thead className="bg-sky-100">
-            <tr>
-              <th className="p-4 text-left text-sm font-semibold text-sky-800">
-                Event
-              </th>
-              <th className="p-4 text-left text-sm font-semibold text-sky-800">
-                Ticket
-              </th>
-              <th className="p-4 text-left text-sm font-semibold text-sky-800">
-                Status
-              </th>
-              <th className="p-4 text-left text-sm font-semibold text-sky-800">
-                Qty/Quota
-              </th>
-              <th className="p-4 text-left text-sm font-semibold text-sky-800">
-                Date
-              </th>
-              <th className="p-4 text-left text-sm font-semibold text-sky-800">
-                Action
-              </th>
-            </tr>
-          </thead>
+      {loading && (
+        <div className="flex justify-center items-center h-64">
+          <p className="text-gray-600">Loading transactions...</p>
+        </div>
+      )}
 
-          {/* Table body */}
-          <tbody className="divide-y divide-gray-200">
-            {transactions.map((tx) => (
-              <tr key={tx.id} className="hover:bg-gray-50">
-                <td className="p-4 text-sm text-gray-700">{tx.event}</td>
-                <td className="p-4 text-sm text-gray-700">{tx.ticketType}</td>
-                <td className="p-4">
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${getStatusColor(
-                      tx.status
-                    )}`}
-                  >
-                    {tx.status}
-                  </span>
-                  {tx.status === "canceled" && tx.canceledReason && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      {tx.canceledReason}
-                    </p>
-                  )}
-                </td>
-                <td className="p-4 text-sm text-gray-700">
-                  <span className="font-medium">{tx.quantity}</span>/{tx.quota}
-                </td>
-                <td className="p-4 text-sm text-gray-700">{tx.date}</td>
-                <td className="p-4">
-                  <button
-                    onClick={() => setSelectedTx(tx)}
-                    className="px-3 py-1 bg-sky-500 text-white rounded-md hover:bg-sky-600 text-sm"
-                  >
-                    View
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {error && (
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
+          <p>{error}</p>
+        </div>
+      )}
 
-      {/* Transaction Detail Modal */}
-      {selectedTx && (
-        <TransactionDetailModal
-          transaction={selectedTx}
-          onClose={() => setSelectedTx(null)}
-          onApprove={() => handleApprove(selectedTx.id)}
-          onReject={() => handleReject(selectedTx.id)}
-        />
+      {!loading && !error && (
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Event
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    User
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Ticket Type
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Qty
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Payment Proof
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {transactions.length > 0 ? (
+                  transactions.map((tx) => (
+                    <tr key={tx.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {tx.event}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div>
+                          <p className="font-medium">{tx.user.name}</p>
+                          <p className="text-gray-500">{tx.user.email}</p>
+                          <p className="text-gray-500">{tx.user.phone}</p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {tx.ticketType}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {tx.quantity}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
+                            tx.status
+                          )}`}
+                        >
+                          {tx.status.replace(/_/g, " ")}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {tx.date}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {tx.paymentProof ? (
+                          <button
+                            onClick={() => openImageModal(tx.paymentProof)}
+                            className="text-sky-600 hover:text-sky-800 font-medium"
+                          >
+                            View Proof
+                          </button>
+                        ) : (
+                          <span className="text-gray-400">No proof</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        {tx.status === "pending" && (
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => {
+                                handleApprove(tx.id);
+                              }}
+                              className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => handleReject(tx.id)}
+                              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={8}
+                      className="px-6 py-4 text-center text-sm text-gray-500"
+                    >
+                      No transactions found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Proof Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
+            <div className="flex justify-between items-center border-b p-4">
+              <h3 className="text-lg font-semibold">Payment Proof</h3>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="p-4 flex justify-center">
+              <img
+                src={currentImage}
+                alt="Payment Proof"
+                className="max-w-full max-h-[70vh] object-contain"
+              />
+            </div>
+            <div className="border-t p-4 flex justify-end">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 bg-sky-600 text-white rounded hover:bg-sky-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

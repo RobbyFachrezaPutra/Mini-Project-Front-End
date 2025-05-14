@@ -154,8 +154,8 @@ export default function BuyTicketDialog({
         coupon_amount: useCoupon ? coupon[0]?.discount_amount : 0,
         point_amount: pointUsed,
         final_price: totalPrice,
-        payment_proof: "dummy.jpg", // nanti diganti dengan upload image, kalau ada
-        status: "pending", // atau "paid" tergantung alur pembayaran kamu
+        payment_proof: "dummy.jpg",
+        status: "Waiting for payment",
         details: Object.entries(selectedQuantities)
           .filter(([_, qty]) => qty > 0)
           .map(([ticketId, qty]) => {
@@ -172,11 +172,12 @@ export default function BuyTicketDialog({
         payload
       );
       localStorage.setItem("latest_transaction", JSON.stringify(res.data.data));
-      setShowModal(true);
+      const stored = localStorage.getItem('latest_transaction');
+      if (stored) setShowModal(true);
 
       toast.success("Tiket berhasil dibeli!");
       onClose();
-      router.push("/pages/transaction/info");
+//      router.push("/pages/transaction/info");
     } catch (err) {
       toast.error("Gagal membeli tiket.");
       console.error(err);
