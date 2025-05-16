@@ -19,7 +19,7 @@ api.interceptors.response.use(
       try {
         // Refresh token endpoint juga akan membaca refresh_token dari cookie
         await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/refresh-token`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/auth/refresh-token`,
           null,
           { withCredentials: true }
         );

@@ -42,7 +42,7 @@ const ResetPasswordPage = () => {
       await axios.patch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/reset-password`,
         {
-          currentPassword: formData.current_password, // Ubah ini!
+          currentPassword: formData.current_password,
           newPassword: formData.new_password,
           confirmPassword: formData.confirm_password,
         },
@@ -55,7 +55,7 @@ const ResetPasswordPage = () => {
       );
 
       toast.success("Password berhasil diubah!");
-      router.push("/pages/Profile");
+      router.push("/Profile");
     } catch (error) {
       console.error("Gagal mengubah password:", error);
       toast.error("Gagal mengubah password");
@@ -119,7 +119,7 @@ const ResetPasswordPage = () => {
           <div className="flex justify-between pt-4">
             <button
               type="button"
-              onClick={() => router.push("/pages/Profile")}
+              onClick={() => router.push("/Profile")}
               className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
             >
               Kembali

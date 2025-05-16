@@ -114,7 +114,7 @@ const AttendeesPage = () => {
             Attendees for {eventName}
           </h1>
           <button
-            onClick={() => router.push("/pages/dashboard")}
+            onClick={() => router.push("/dashboard")}
             className="flex items-center gap-2 text-sky-600 hover:text-sky-800"
           >
             <svg

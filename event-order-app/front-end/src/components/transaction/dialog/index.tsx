@@ -12,6 +12,7 @@ import { IUserParam } from "@/interface/user.interface";
 import { useRouter } from "next/navigation";
 import PaymentInfoModal from "../info";
 import { date } from "yup";
+import { ITransactionParam } from "@/interface/transaction.interface";
 
 interface BuyTicketDialogProps {
   open: boolean;
@@ -39,9 +40,11 @@ export default function BuyTicketDialog({
   const [useCoupon, setUseCoupon] = useState(false);
   const [userPoint, setUserPoint] = useState<IPoint[]>([]); // misalnya dari API
   const [pointUsed, setPointUsed] = useState(0);
+  const [ticketPrice, setTicketPrice] = useState(0);
   const [user, setUser] = useState<IUserParam | null>(null); // misalnya dari API
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
+  const [trans, setTrans] = useState<ITransactionParam | null>(null); // misalnya dari API
 
   useEffect(() => {
     if (open) {
@@ -109,9 +112,14 @@ export default function BuyTicketDialog({
   const handleQuantityChange = (ticketId: number, quantity: number) => {
     setSelectedQuantities((prev) => ({ ...prev, [ticketId]: quantity }));
   };
+
   const handleVoucherClick = (voucher: IVoucherParam) => {
-    setSelectedVoucher(voucher);
+    if(ticketPrice){
+      setSelectedVoucher(voucher);
+      setSelectedVoucherId(voucher.id);
+    }
   };
+
   const subtotal = Object.entries(selectedQuantities).reduce(
     (acc, [ticketId, qty]) => {
       const ticket = tickets.find((t) => t.id === parseInt(ticketId));
@@ -120,6 +128,11 @@ export default function BuyTicketDialog({
     0
   );
 
+  useEffect(() => {
+    setTicketPrice(subtotal);
+
+  },[subtotal])
+  
   const discount = selectedVoucher?.discount_amount || 0;
   const discountCoupon =
     coupon && useCoupon ? subtotal * (coupon[0].discount_amount / 100) : 0;
@@ -155,7 +168,7 @@ export default function BuyTicketDialog({
         point_amount: pointUsed,
         final_price: totalPrice,
         payment_proof: "dummy.jpg",
-        status: "Waiting for payment",
+        status: totalPrice > 0 ? "Waiting for payment" : "approve",
         details: Object.entries(selectedQuantities)
           .filter(([_, qty]) => qty > 0)
           .map(([ticketId, qty]) => {
@@ -172,12 +185,16 @@ export default function BuyTicketDialog({
         payload
       );
       localStorage.setItem("latest_transaction", JSON.stringify(res.data.data));
-      const stored = localStorage.getItem('latest_transaction');
-      if (stored) setShowModal(true);
+      const stored = JSON.parse(
+        localStorage.getItem("latest_transaction") || "null"
+      ) as ITransactionParam;
+  
+      setTrans(stored);
+      if (trans?.status === "Waiting for payment") setShowModal(true);
 
       toast.success("Tiket berhasil dibeli!");
       onClose();
-//      router.push("/pages/transaction/info");
+//      router.push("/transaction/info");
     } catch (err) {
       toast.error("Gagal membeli tiket.");
       console.error(err);
@@ -211,8 +228,13 @@ export default function BuyTicketDialog({
                           Remaining Seats: {ticket.remaining}
                         </p>
                         <p className="text-sm text-gray-700">
-                          Price: Rp {ticket.price.toLocaleString()}
-                        </p>
+                          Price: {Number(ticket.price).toLocaleString("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                        })}                        
+                      </p>
                       </div>
                       <div>
                         <select
@@ -240,18 +262,36 @@ export default function BuyTicketDialog({
                   </div>
                 ))}
                 <p className="text-lg font-semibold">
-                  Discount Voucher: Rp{" "}
-                  {selectedVoucher?.discount_amount.toLocaleString()}
+                  Discount Voucher: {selectedVoucher && selectedVoucher.discount_amount 
+                    ? Number(selectedVoucher.discount_amount).toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })
+                    : 0}
                 </p>
                 <p className="text-lg font-semibold">
-                  Discount Point : {pointUsed.toLocaleString()}
+                  Discount Point : {Number(pointUsed).toLocaleString(
+                    "id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                  })}
                 </p>
                 <p className="text-lg font-semibold">
                   Discount Coupon :{" "}
                   {coupon[0]?.discount_amount.toLocaleString()}%
                 </p>
                 <p className="text-lg font-semibold">
-                  Total: Rp {totalPrice.toLocaleString()}
+                  Total: {Number(totalPrice).toLocaleString(
+                    "id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                  })}
                 </p>
               </div>
               <div>
@@ -260,7 +300,6 @@ export default function BuyTicketDialog({
                     key={voucher.id}
                     onClick={() => {
                       handleVoucherClick(voucher);
-                      setSelectedVoucherId(voucher.id);
                     }}
                     className={`w-[300px] border p-4 rounded-md mb-4 cursor-pointer ${
                       selectedVoucherId === voucher.id
@@ -275,8 +314,14 @@ export default function BuyTicketDialog({
                         </h2>
                         <p className="text-gray-600">{voucher.description}</p>
                         <p className="text-sm text-gray-700">
-                          Discount Amount: Rp{" "}
-                          {voucher.discount_amount.toLocaleString()}
+                          Discount Amount: 
+                          {Number(voucher.discount_amount).toLocaleString(
+                            "id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,}                            
+                          )}
                         </p>
                       </div>
                     </div>
@@ -341,10 +386,13 @@ export default function BuyTicketDialog({
           </Dialog.Panel>
         </div>
       </Dialog>
+      {showModal && (
       <PaymentInfoModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
       />
+      )
+        }
     </>
   );
 }

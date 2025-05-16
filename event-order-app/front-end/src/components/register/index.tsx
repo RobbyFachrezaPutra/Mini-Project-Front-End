@@ -22,7 +22,7 @@ const RegisterSchema = Yup.object().shape({
 export default function RegisterPage() {
   const router = useRouter();
   return (
-    <section className="flex justify-center items-center min-h-screen bg-sky-100">
+    <section className="flex justify-center items-center min-h-screen bg-gradient-to-r from-slate-700 to-slate-900">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-center text-sky-700 md:text-3xl lg:text-4xl">
           Register
@@ -58,7 +58,7 @@ export default function RegisterPage() {
               } else {
                 alert("Berhasil daftar!");
                 resetForm();
-                router.push("/pages/login");
+                router.push("/login");
               }
             } catch (error) {
               console.error(error);
@@ -173,7 +173,7 @@ export default function RegisterPage() {
 
               <button
                 type="submit"
-                className="bg-sky-600 text-white p-2 rounded mt-4 hover:bg-sky-700"
+                className="bg-sky-700 text-white p-2 rounded mt-4 hover:bg-sky-700"
               >
                 Register
               </button>

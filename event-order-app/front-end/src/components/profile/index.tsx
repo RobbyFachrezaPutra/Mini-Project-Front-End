@@ -5,8 +5,7 @@ import axios from "axios";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/lib/redux/hooks";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import api from "@/lib/axiosInstance";
 
 const ProfilePage = () => {
@@ -17,58 +16,62 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     email: "",
     profile_picture: "",
-    referral_code: "", // New referral code field
+    referral_code: "",
+    points: 0,
+    role: "",
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  // Toggle password fields
+  const [userPoints, setUserPoints] = useState<
+    { point: number; expired_at: string }[]
+  >([]);
+  const [showPointsDetail, setShowPointsDetail] = useState(false);
 
   useEffect(() => {
-    //   const fetchProfileData = async () => {
-    //     try {
-    //       const token = getCookie("acces_token");
-    //       if (!token) {
-    //         setError("No token found, please log in.");
-    //         return;
-    //       }
-
-    //       const response = await axios.get(
-    //         `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/profile/user-profile`,
-    //         {
-    //           headers: {
-    //             Authorization: `Bearer ${token}`,
-    //           },
-    //         }
-    //       );
-
-    //       const user = response.data.data; // Ambil dari data.data
-    //       console.log("Data user:", user);
-
-    //       setUserData(user);
     const storedUser = JSON.parse(localStorage.getItem("user") || "null");
     setFormData({
       first_name: storedUser.first_name || "",
       last_name: storedUser.last_name || "",
       email: storedUser.email || "",
-      profile_picture: storedUser.profile_picture || "/default-profile.png",
+      profile_picture:
+        storedUser.profile_picture || "Profile_avatar_placeholder_large.png",
       referral_code: storedUser.referral_code || "",
+      points: storedUser.points || 0,
+      role: storedUser.role || "",
     });
-
-    //   setLoading(false);
-    //     } catch (err) {
-    //       console.error(" Gagal fetch data:", err);
-    //       setError("Failed to fetch profile data.");
-    //       setLoading(false);
-    //     }
-    //   };
-
-    //   fetchProfileData();
-
     setLoading(false);
+  }, [userAuth]);
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+    setFormData({
+      first_name: storedUser.first_name || "",
+      last_name: storedUser.last_name || "",
+      email: storedUser.email || "",
+      profile_picture:
+        storedUser.profile_picture || "Profile_avatar_placeholder_large.png",
+      referral_code: storedUser.referral_code || "",
+      points: storedUser.points || 0,
+      role: storedUser.role || "",
+    });
+    setLoading(false);
+
+    // Fetch point detail
+    if (storedUser?.id) {
+      api
+        .get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/points/by-user/${storedUser.id}`
+        )
+        .then((res) => {
+          setUserPoints(res.data.data);
+        })
+        .catch(() => setUserPoints([]));
+    }
   }, [userAuth]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,13 +117,24 @@ const ProfilePage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          withCredentials: true,
         }
       );
 
-      setFormData((prev) => ({
-        ...prev,
-        profile_picture: "/default-profile.png",
-      }));
+      if (response.data?.data) {
+        localStorage.setItem("user", JSON.stringify(response.data.data));
+        setFormData((prev) => ({
+          ...prev,
+          profile_picture:
+            response.data.data.profile_picture ||
+            "Profile_avatar_placeholder_large.png",
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          profile_picture: "Profile_avatar_placeholder_large.png",
+        }));
+      }
       setSelectedFile(null);
       toast.success("Foto profil berhasil dihapus");
     } catch (err: any) {
@@ -162,10 +176,7 @@ const ProfilePage = () => {
         return;
       }
 
-      // Buat instance FormData baru
       const formPayload = new FormData();
-
-      // Append data dari state formData
       formPayload.append("first_name", formData.first_name);
       formPayload.append("last_name", formData.last_name);
       formPayload.append("referral_code", formData.referral_code);
@@ -183,8 +194,18 @@ const ProfilePage = () => {
         }
       );
 
-      localStorage.removeItem("user");
       localStorage.setItem("user", JSON.stringify(response.data.data));
+      setFormData({
+        first_name: response.data.data.first_name || "",
+        last_name: response.data.data.last_name || "",
+        email: response.data.data.email || "",
+        profile_picture:
+          response.data.data.profile_picture ||
+          "Profile_avatar_placeholder_large.png",
+        referral_code: response.data.data.referral_code || "",
+        points: response.data.data.points || 0,
+        role: response.data.data.role || "",
+      });
       setIsEditing(false);
       toast.success("Profil berhasil diperbarui!");
     } catch (err) {
@@ -199,28 +220,63 @@ const ProfilePage = () => {
     return <div className="text-center text-lg text-red-500">{error}</div>;
 
   return (
-    <section className="flex justify-center items-center min-h-screen bg-sky-100">
-      <ToastContainer position="top-right" />
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+    <section className="min-h-screen bg-stone-100 flex flex-col items-center pt-10 pb-24">
+      {/* Tombol Back to Home */}
+      <div className="w-full max-w-4xl flex items-center mb-8">
         <button
           onClick={() => router.push("/")}
-          className="mb-4 text-sky-600 hover:underline"
+          className="text-slate-700 hover:text-sky-600 flex items-center gap-1 text-base font-semibold"
         >
-          ← Back to Home
+          <span className="text-xl">←</span> <span>Back to Home</span>
         </button>
+      </div>
 
-        <div className="text-center mb-6">
-          <div className="relative inline-block">
+      {/* Card Profile */}
+      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col md:flex-row gap-0 md:gap-10 px-4 md:px-16 py-12 border border-slate-200">
+        {/* Sidebar Profile */}
+        <div className="flex flex-col items-center md:items-start w-full md:w-1/3 mb-8 md:mb-0">
+          <div className="relative flex flex-col items-center w-full">
             <img
-              src={formData.profile_picture}
+              src={
+                formData.profile_picture?.startsWith("data:")
+                  ? formData.profile_picture
+                  : formData.profile_picture?.startsWith("http")
+                  ? formData.profile_picture
+                  : `${process.env.NEXT_PUBLIC_API_URL}/${
+                      formData.profile_picture ||
+                      "Profile_avatar_placeholder_large.png"
+                    }`
+              }
               alt="Profile"
-              className="w-32 h-32 rounded-full mx-auto border-4 border-sky-500 mb-4 cursor-pointer"
+              className="w-44 h-44 rounded-full border-4 border-slate-700 shadow-xl object-cover bg-slate-100"
               onClick={() => isEditing && fileInputRef.current?.click()}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                  "/Profile_avatar_placeholder_large.png";
+              }}
             />
+            {/* Tombol ganti/hapus foto hanya saat edit */}
             {isEditing && (
-              <div className="absolute bottom-2 right-2 flex gap-2">
-                <label className="bg-sky-600 text-white p-2 rounded-full hover:bg-sky-700 cursor-pointer">
-                  ✏️
+              <div className="flex flex-row items-center gap-4 mt-6 mb-2">
+                <label
+                  className="flex items-center gap-1 text-sky-600 font-semibold cursor-pointer hover:underline"
+                  title="Change Profile Picture"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.232 5.232l3.536 3.536M9 13l6-6m2 2a2.828 2.828 0 11-4-4l6 6a2.828 2.828 0 01-4 4z"
+                    />
+                  </svg>
+                  Change Profile Picture
                   <input
                     type="file"
                     ref={fileInputRef}
@@ -229,94 +285,156 @@ const ProfilePage = () => {
                     className="hidden"
                   />
                 </label>
-                {/* 🆕 [TAMBAHAN] Tombol hapus foto */}
-                {formData.profile_picture !== "/default-profile.png" && (
+                {formData.profile_picture !==
+                  "Profile_avatar_placeholder_large.png" && (
                   <button
                     onClick={handleRemovePicture}
-                    className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-transform hover:scale-110"
-                    title="Hapus foto profil"
+                    className="text-red-500 hover:underline text-sm"
+                    title="Remove Profile Picture"
                   >
-                    🗑️
+                    Remove
                   </button>
                 )}
               </div>
             )}
+            {/* Role rata tengah */}
+            <div className="w-full flex justify-center mt-10">
+              <span className="inline-block bg-slate-100 text-slate-700 px-6 py-2 rounded-full text-base font-semibold shadow">
+                {formData.role?.toUpperCase() || "-"}
+              </span>
+            </div>
           </div>
-          <h1 className="text-3xl font-semibold text-sky-700 mt-4">
-            {formData.first_name} {formData.last_name}
-          </h1>
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <label className="font-medium text-gray-700">First Name:</label>
-            <input
-              type="text"
-              name="first_name"
-              value={formData.first_name}
-              onChange={handleChange}
-              disabled={!isEditing}
-              className="w-full p-2 border rounded mt-1"
-            />
+        {/* Form Data User */}
+        <div className="flex-1 flex flex-col gap-6 justify-center">
+          {/* Nama & Email */}
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-slate-700 tracking-tight">
+              {formData.first_name} {formData.last_name}
+            </h1>
+            <div className="flex items-center mt-2">
+              <span className="inline-block bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm font-semibold shadow">
+                {formData.email}
+              </span>
+            </div>
+          </div>
+          {/* Inputan */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="font-medium text-slate-700">First Name:</label>
+              <input
+                type="text"
+                name="first_name"
+                value={formData.first_name}
+                onChange={handleChange}
+                disabled={!isEditing}
+                className={`w-full p-3 border rounded mt-1 text-lg ${
+                  isEditing
+                    ? "bg-white border-slate-400"
+                    : "bg-slate-100 border-slate-200"
+                }`}
+              />
+            </div>
+            <div>
+              <label className="font-medium text-slate-700">Last Name:</label>
+              <input
+                type="text"
+                name="last_name"
+                value={formData.last_name}
+                onChange={handleChange}
+                disabled={!isEditing}
+                className={`w-full p-3 border rounded mt-1 text-lg ${
+                  isEditing
+                    ? "bg-white border-slate-400"
+                    : "bg-slate-100 border-slate-200"
+                }`}
+              />
+            </div>
           </div>
 
-          <div>
-            <label className="font-medium text-gray-700">Last Name:</label>
-            <input
-              type="text"
-              name="last_name"
-              value={formData.last_name}
-              onChange={handleChange}
-              disabled={!isEditing}
-              className="w-full p-2 border rounded mt-1"
-            />
-          </div>
-
-          <div>
-            <label className="font-medium text-gray-700">Email:</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              disabled
-              className="w-full p-2 border rounded mt-1 bg-gray-100"
-            />
-          </div>
-
-          <div>
-            <label className="font-medium text-gray-700">Referral Code:</label>
-            <input
-              type="text"
-              name="referral_code"
-              value={formData.referral_code}
-              disabled
-              className="w-full p-2 border rounded mt-1 bg-gray-100"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="font-medium text-slate-700">
+                Referral Code:
+              </label>
+              <input
+                type="text"
+                name="referral_code"
+                value={formData.referral_code}
+                disabled
+                className="w-full p-3 border rounded mt-1 bg-slate-100 border-slate-200 font-mono tracking-wider text-lg"
+              />
+            </div>
+            <div>
+              <label className="font-medium text-slate-700">Points:</label>
+              <input
+                type="text"
+                name="points"
+                value={formData.points}
+                disabled
+                className="w-full p-3 border rounded mt-1 bg-slate-100 border-slate-200 font-bold text-slate-7  00 text-lg"
+              />
+              {userPoints.length > 0 && (
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 font-semibold text-slate-700 text-sm focus:outline-none"
+                    onClick={() => setShowPointsDetail((v) => !v)}
+                  >
+                    <span>Detail Points</span>
+                    <span
+                      className={`transition-transform ${
+                        showPointsDetail ? "rotate-90" : ""
+                      }`}
+                    >
+                      ▼
+                    </span>
+                  </button>
+                  {showPointsDetail && (
+                    <ul className="space-y-1 mt-2 border rounded bg-slate-50 p-2 max-h-40 overflow-y-auto">
+                      {userPoints.map((pt, idx) => (
+                        <li
+                          key={idx}
+                          className="text-slate-600 text-xs flex gap-2"
+                        >
+                          <span className="font-bold">{pt.point} pts</span>
+                          <span className="text-slate-400">
+                            (expired:{" "}
+                            {new Date(pt.expired_at).toLocaleDateString()})
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {isEditing && (
             <div className="pt-2">
               <button
                 type="button"
-                onClick={() => router.push("/pages/reset-password")}
-                className="text-sky-600 hover:underline text-sm"
+                onClick={() => router.push("/reset-password")}
+                className="text-sky-600 hover:underline text-m"
               >
-                Ubah Password
+                Reset Password
               </button>
             </div>
           )}
 
-          <div className="mt-6 flex justify-center gap-4">
+          <div className="mt-8 flex justify-center gap-4">
             {isEditing ? (
               <>
                 <button
-                  className="bg-sky-600 text-white p-2 rounded hover:bg-sky-700"
+                  className="bg-slate-700 text-white px-6 py-2 rounded-lg hover:bg-slate-800 shadow text-lg"
                   onClick={handleSave}
                 >
                   Save Changes
                 </button>
                 <button
-                  className="bg-gray-600 text-white p-2 rounded hover:bg-gray-700"
+                  className="bg-slate-400 text-white px-6 py-2 rounded-lg hover:bg-slate-500 shadow text-lg"
                   onClick={() => {
                     setIsEditing(false);
                   }}
@@ -326,7 +444,7 @@ const ProfilePage = () => {
               </>
             ) : (
               <button
-                className="bg-sky-600 text-white p-2 rounded hover:bg-sky-700"
+                className="bg-slate-700 text-white px-6 py-2 rounded-lg hover:bg-slate-800 shadow text-lg"
                 onClick={() => setIsEditing(true)}
               >
                 Edit Profile

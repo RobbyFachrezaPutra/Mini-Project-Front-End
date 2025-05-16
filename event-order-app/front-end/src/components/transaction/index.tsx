@@ -44,8 +44,9 @@ export default function EventTransaction() {
       }),
       Highlight,
     ],
-    content: "", // Set konten kosong untuk sementara
-    editable: false, // Mengatur editor menjadi hanya bisa dilihat (read-only)
+    content: "",
+    editable: false,    
+    immediatelyRender: false,     
   });
 
   useEffect(() => {
@@ -63,102 +64,151 @@ export default function EventTransaction() {
       })
       .catch((err) => {
         if (err.response?.status === 401) {
-          router.push("/pages/login");
+          router.push("/login");
         }
       });
-  }, [id, editor]); // Pastikan editor berada di dependencies list
+  }, [id, editor]);
 
-  if (!event) return <div>Loading...</div>;
+  if (!event)
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-400"></div>
+        <span className="ml-4 text-slate-600 text-lg font-medium">
+          Loading...
+        </span>
+      </div>
+    );
 
   return (
     <>
-      <div className="mb-4">
+      <div className="mb-4 mt-6 max-w-6xl mx-auto px-4">
         <Link
           href="/"
-          className="inline-flex items-center text-sm text-blue-600 hover:underline"
+          className="inline-flex items-center text-sm text-sky-500 hover:text-sky-700 transition-colors font-semibold"
         >
-          ← Back to Home
+          <span className="mr-1">←</span>
+          Kembali ke Beranda
         </Link>
-      </div>        
-
-    <div className="flex flex-col lg:flex-row justify-center mx-auto mt-[200px] p-6 gap-6 max-w-6xl">
-      {/* Kolom kiri: gambar */}
-      <div className="lg:w-2/3 w-full">
-        <img
-          src={event.banner_url}
-          alt={event.name}
-          className="w-full h-96 object-cover rounded-md shadow"
-        />
-
-        {/* Merender konten Tiptap */}
-        <div className="mt-4 text-gray-700 leading-relaxed border-2 border-gray-400 rounded shadow p-3">
-          <EditorContent editor={editor} /> {/* Render konten Tiptap */}
-        </div>
       </div>
-      {/* Kolom kanan: detail */}
-      <div className="lg:w-1/3 w-full flex flex-col justify-between p-6 shadow-lg rounded-xl h-fit bg-white">
-        {/* Konten atas */}
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold text-sky-700">{event.name}</h1>
-          <p className="text-sm text-gray-600">📍 {event.location}</p>
-          <p className="text-sm text-gray-600">
-            📅{" "}
-            {event.start_date
-              ? new Date(event.start_date).toLocaleString("id-ID", {
-                  dateStyle: "long",
-                  timeStyle: "short",
-                })
-              : null}
-          </p>
-          <p className="text-sm text-gray-600">
-            🕒 Sampai:{" "}
-            {event.end_date
-              ? new Date(event.end_date).toLocaleString("id-ID", {
-                  dateStyle: "long",
-                  timeStyle: "short",
-                })
-              : null}
-          </p>
-          <p className="text-sm text-gray-500">
-            Kategori: 🎭 {event.category?.name || "Umum"}
-          </p>
-          <p className="text-sm text-gray-800 font-semibold">
-            Harga Mulai: Rp
-            {Math.min(...event.tickets.map((t) => t.price)).toLocaleString()}
-          </p>
-          <p className="text-sm text-emerald-600 font-medium">
-            Sisa Kursi: {event.available_seats}
-          </p>
-          <p className="text-sm text-gray-500">
-            Diselenggarakan oleh:{" "}
-            <span className="font-medium">
-              {event.organizer?.first_name || event.organizer_id}
+
+      <div className="flex flex-col lg:flex-row justify-center mx-auto mt-8 p-4 md:p-8 gap-8 max-w-6xl">
+        {/* Kolom kiri: gambar & deskripsi */}
+        <div className="lg:w-2/3 w-full flex flex-col gap-6">
+          <div className="rounded-2xl overflow-hidden shadow-xl border border-slate-200 bg-slate-50 relative group">
+            <img
+              src={event.banner_url}
+              alt={event.name}
+              className="w-full h-72 md:h-96 object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <span className="absolute top-4 left-4 bg-sky-400 text-slate-800 text-xs font-bold px-3 py-1 rounded-full shadow border border-sky-200 uppercase tracking-wider">
+              {event.category?.name || "Umum"}
             </span>
-          </p>
+            {event.available_seats === 0 && (
+              <span className="absolute top-4 right-4 bg-rose-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow border border-rose-200 uppercase tracking-wider">
+                Sold Out
+              </span>
+            )}
+          </div>
         </div>
+        {/* Kolom kanan: detail */}
+        <div className="lg:w-1/3 w-full flex flex-col justify-between p-6 md:p-8 shadow-2xl rounded-2xl h-fit bg-slate-700 border border-slate-200">
+          {/* Konten atas */}
+          <div className="space-y-4">
+            <h1 className="text-3xl font-extrabold text-sky-400 mb-2">
+              {event.name}
+            </h1>
+            <div className="flex items-center gap-2 text-slate-200">
+              <span role="img" aria-label="location">
+                📍
+              </span>
+              <span className="text-base">{event.location}</span>
+            </div>
+            <div className="flex items-center gap-2 text-slate-200">
+              <span role="img" aria-label="calendar">
+                📅
+              </span>
+              <span>
+                {event.start_date
+                  ? new Date(event.start_date).toLocaleString("id-ID", {
+                      dateStyle: "long",
+                      timeStyle: "short",
+                    })
+                  : null}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-slate-200">
+              <span role="img" aria-label="clock">
+                🕒
+              </span>
+              <span>
+                Sampai:{" "}
+                {event.end_date
+                  ? new Date(event.end_date).toLocaleString("id-ID", {
+                      dateStyle: "long",
+                      timeStyle: "short",
+                    })
+                  : null}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-sky-200">
+              <span role="img" aria-label="ticket">
+                🎟️
+              </span>
+              <span className="text-lg font-bold">
+                Harga Mulai: Rp
+                {Math.min(
+                  ...event.tickets.map((t) => t.price)
+                ).toLocaleString()}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-emerald-400 font-semibold">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-1"></span>
+              Sisa Kursi: {event.available_seats}
+            </div>
+            <div className="flex items-center gap-2 text-slate-300">
+              <span role="img" aria-label="user">
+                👤
+              </span>
+              <span>
+                Diselenggarakan oleh:{" "}
+                <span className="font-semibold text-sky-300">
+                  {event.organizer?.first_name || event.organizer_id}
+                </span>
+              </span>
+            </div>
+          </div>
 
-        <div className="flex flex-col gap-3 mt-6">
-          <button
-            type="button"
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 w-full"
-            onClick={handleOpenDialog}
-          >
-            🎟️ Beli Tiket
-          </button>
-          <button
-            type="button"
-            className="border border-blue-600 text-blue-600 px-6 py-2 rounded hover:bg-blue-50 w-full"
-          >
-            🔗 Bagikan Event
-          </button>
+          <div className="border-t border-slate-500 my-6"></div>
+
+          <div className="flex flex-col gap-3">
+            <button
+              type="button"
+              className={`bg-gradient-to-r from-sky-400 to-sky-500 text-slate-800 font-bold px-6 py-3 rounded-xl hover:from-sky-500 hover:to-sky-400 hover:text-white transition-colors w-full shadow-lg flex items-center justify-center gap-2 disabled:opacity-60`}
+              onClick={handleOpenDialog}
+              disabled={event.available_seats === 0}
+            >
+              <span role="img" aria-label="ticket">
+                🎟️
+              </span>
+              Beli Tiket
+            </button>
+            <button
+              type="button"
+              className="border-2 border-sky-400 text-sky-400 font-semibold px-6 py-3 rounded-xl hover:bg-sky-50 hover:text-slate-700 transition-colors w-full flex items-center justify-center gap-2"
+            >
+              <span role="img" aria-label="share">
+                🔗
+              </span>
+              Bagikan Event
+            </button>
+          </div>
         </div>
+        <BuyTicketDialog
+          open={isDialogOpen}
+          onClose={handleCloseDialog}
+          eventId={event.id}
+        />
       </div>
-      <BuyTicketDialog
-        open={isDialogOpen}
-        onClose={handleCloseDialog}
-        eventId={event.id}
-      />
-    </div>
     </>
   );
 }
