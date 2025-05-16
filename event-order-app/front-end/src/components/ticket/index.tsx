@@ -6,34 +6,63 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import * as Yup from "yup";
+import { useAppSelector } from "@/lib/redux/hooks";
+import { useEffect, useState } from "react";
+
 interface TicketDialogProps {
   open: boolean;
   onClose: () => void;
   onAddTicket: (ticket: any) => void;
 }
 
-const TicketSchema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
-  description: Yup.string().required("Description is required"),
-  quota: Yup.number()
-    .required("Number of seats is required"),
-  sales_start: Yup.date()
-    .required("Sales start is required")
-    .test("is-before-end", "Sales start must be before Sales End", function (value) {
-      return !this.parent.end_date || value <= this.parent.end_date;
-    }),
-  sales_end: Yup.date()
-    .required("Sales end is required")
-    .test("is-after-start", "Sales End date must be after Sales start", function (value) {
-      return !this.parent.start_date || value >= this.parent.start_date;
-    }),
-});
-
 export default function TicketDialog({
   open,
   onClose,
-  onAddTicket,
+  onAddTicket
 }: TicketDialogProps) {
+
+  const [seats, setSeats] = useState<number>(0);
+  const [end_date, setEndDate] = useState<string | null>(null);
+
+  const storedSeat = (useAppSelector((state) => state.seat.seats));
+  const storedDate = useAppSelector((state) => state.seat.end_date);
+
+  useEffect(() =>{
+    setSeats(storedSeat);
+    console.log(storedSeat);
+    setEndDate(storedDate);
+  },[storedDate, storedSeat])
+
+  const TicketSchema = Yup.object().shape({
+    name: Yup.string().required("Name is required"),
+    description: Yup.string().required("Description is required"),
+    quota: Yup.number()
+    .required("Number of seats is required")
+    .test("is-positive", "Number of seats must be greater than 0", value => {
+      return value !== undefined && value > 0;
+    })
+    .test("is-less-or-equal-seats", `Quota can't be more than remaining seats (${seats})`, value => {
+      return value !== undefined && value <= seats;
+    }),
+    sales_start: Yup.date()
+      .required("Sales start is required")
+      .test("is-before-end", "Sales start must be before Sales End", function (value) {
+        return !this.parent.sales_start || value <= this.parent.sales_end;
+      })
+      .test("is-more-than-event-end-date", "start sales date can't be more than end date event", function (value){
+        return value.toLocaleDateString() < end_date!;
+      }),    
+    sales_end: Yup.date()
+      .required("Sales end is required")
+      .test("is-after-start", "Sales End date must be after Sales start", function (value) {
+        return this.parent.sales_end || value >= this.parent.sales_start;
+      })
+      .test("is-more-than-event-end-date", "start sales date can't be more than end date event", function (value){
+        return value.toLocaleDateString() < end_date!;
+      }),    
+  
+  });
+  
   return (
     <Dialog open={open} onClose={onClose} className="fixed z-10 inset-0 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen px-4">

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const DASHBOARD_PATH = "/pages/dashboard";
+const DASHBOARD_PATH = "/dashboard";
 
 function getUserFromRequest(req: NextRequest) {
   const token = req.cookies.get("access_token")?.value;
@@ -27,8 +27,8 @@ export function middleware(req: NextRequest) {
     const user = getUserFromRequest(req);
 
     if (!user) {
-      console.log("User not found, redirecting to /pages/login");
-      return NextResponse.redirect(new URL("/pages/login", req.url));
+      console.log("User not found, redirecting to /login");
+      return NextResponse.redirect(new URL("/login", req.url));
     }
 
     if (user.role !== "event_organizer") {
@@ -41,5 +41,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/pages/dashboard", "/pages/dashboard/:path*"],
+  matcher: ["/dashboard", "/dashboard/:path*"],
 };

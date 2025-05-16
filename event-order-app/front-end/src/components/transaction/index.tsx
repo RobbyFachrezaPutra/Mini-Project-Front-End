@@ -45,7 +45,8 @@ export default function EventTransaction() {
       Highlight,
     ],
     content: "",
-    editable: false,
+    editable: false,    
+    immediatelyRender: false,     
   });
 
   useEffect(() => {
@@ -63,7 +64,7 @@ export default function EventTransaction() {
       })
       .catch((err) => {
         if (err.response?.status === 401) {
-          router.push("/pages/login");
+          router.push("/login");
         }
       });
   }, [id, editor]);

@@ -112,7 +112,7 @@ export default function HomePage() {
                   {eventsToShow.map((event) => (
                     <Link
                       key={event.id}
-                      href={`/pages/transaction/${event.id}`}
+                      href={`/transaction/${event.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group"

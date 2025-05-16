@@ -12,20 +12,21 @@ interface VoucherDialogProps {
   onClose: () => void;
   onAddVoucher: (Voucher: any) => void;
 }
+
 const VoucherSchema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
-  description: Yup.string().required("Description is required"),
+  code: Yup.string().required("Code is required").trim(),
   sales_start: Yup.date()
     .required("Sales start is required")
     .test("is-before-end", "Sales start must be before Sales End", function (value) {
-      return !this.parent.end_date || value <= this.parent.end_date;
+      return this.parent.sales_start || value <= this.parent.sales_end;
     }),
   sales_end: Yup.date()
     .required("Sales end is required")
     .test("is-after-start", "Sales End date must be after Sales start", function (value) {
-      return !this.parent.start_date || value >= this.parent.start_date;
+      return this.parent.sales_end || value >= this.parent.sales_start;
     }),
 });
+
 export default function VoucherDialog({
   open,
   onClose,
@@ -49,6 +50,7 @@ export default function VoucherDialog({
               event_id:0,
               updated_at: new Date
             }}
+            validationSchema={VoucherSchema}
             onSubmit={(VoucherValues) => {
               onAddVoucher({ ...VoucherValues});
               onClose();

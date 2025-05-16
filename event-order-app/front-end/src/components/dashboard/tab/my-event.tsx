@@ -59,11 +59,11 @@ const MyEventsTab = () => {
   }, []);
 
   const handleViewAttendees = (eventId: number) => {
-    router.push(`/pages/attandees?eventId=${eventId}`);
+    router.push(`/attandees?eventId=${eventId}`);
   };
 
   const handleEditEvent = (eventId: number) => {
-    router.push(`/pages/event/edit?id=${eventId}`);
+    router.push(`/event/edit?id=${eventId}`);
   };
 
   const formatDate = (date: Date | string | null) => {
@@ -119,7 +119,7 @@ const MyEventsTab = () => {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-slate-700">My Events</h1>
         <button
-          onClick={() => router.push("/pages/event")}
+          onClick={() => router.push("/event")}
           className="flex items-center gap-2 px-5 py-2 bg-slate-700 text-white rounded-xl shadow hover:bg-slate-800 transition"
         >
           <span className="text-xl">+</span> Create Event
@@ -132,7 +132,7 @@ const MyEventsTab = () => {
             You haven't created any events yet
           </p>
           <button
-            onClick={() => router.push("/pages/event/create")}
+            onClick={() => router.push("/event/create")}
             className="px-5 py-2 bg-slate-700 text-white rounded-xl shadow hover:bg-slate-800 transition"
           >
             Create Your First Event

@@ -19,7 +19,7 @@ export default function Footer() {
             <ul className="text-slate-300">
               <li>
                 <a
-                  href="/pages/login"
+                  href="/login"
                   className="inline-block text-base hover:text-gray-600 mb-3"
                 >
                   Masuk

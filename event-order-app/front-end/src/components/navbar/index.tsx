@@ -53,7 +53,7 @@ const Navbar = () => {
   const handleSearchAuto = async (query: string) => {
     try {
       if (query)
-        router.push(`/pages/homepage?keyword=${encodeURIComponent(query)}`);
+        router.push(`/homepage?keyword=${encodeURIComponent(query)}`);
       else {
         router.push("/");
       }
@@ -66,7 +66,7 @@ const Navbar = () => {
     e.preventDefault();
     if (!search.trim()) return;
 
-    router.push(`/pages/homepage?keyword=${encodeURIComponent(search)}`);
+    router.push(`/homepage?keyword=${encodeURIComponent(search)}`);
   };
 
   // Close dropdown on outside click
@@ -139,13 +139,13 @@ const Navbar = () => {
           {!user ? (
             <div className="flex flex-col sm:flex-row gap-2">
               <Link
-                href="/pages/register"
+                href="/register"
                 className="border-2 border-sky-400 px-4 py-2 rounded-xl w-[110px] text-center hover:bg-sky-400 hover:text-white transition font-semibold"
               >
                 Register
               </Link>
               <Link
-                href="/pages/login"
+                href="/login"
                 className="border-2 border-sky-400 px-4 py-2 rounded-xl w-[110px] text-center bg-sky-400 text-white hover:bg-sky-500 transition font-semibold"
               >
                 Login
@@ -194,13 +194,13 @@ const Navbar = () => {
                   {user.role === "event_organizer" ? (
                     <>
                       <Link
-                        href="/pages/dashboard"
+                        href="/dashboard"
                         className="block w-full text-left px-4 py-2 hover:bg-sky-50 rounded-t-xl transition"
                       >
                         Dashboard
                       </Link>
                       <Link
-                        href="/pages/profile"
+                        href="/profile"
                         className="block w-full text-left px-4 py-2 hover:bg-sky-50 transition"
                       >
                         Profile
@@ -209,13 +209,13 @@ const Navbar = () => {
                   ) : (
                     <>
                       <Link
-                        href="/pages/transaction/detail"
+                        href="/transaction/detail"
                         className="block w-full text-left px-4 py-2 hover:bg-sky-50 transition"
                       >
                         Transactions
                       </Link>
                       <Link
-                        href="/pages/profile"
+                        href="/profile"
                         className="block w-full text-left px-4 py-2 hover:bg-sky-50 transition"
                       >
                         Profile

@@ -416,7 +416,7 @@ const ProfilePage = () => {
             <div className="pt-2">
               <button
                 type="button"
-                onClick={() => router.push("/pages/reset-password")}
+                onClick={() => router.push("/reset-password")}
                 className="text-sky-600 hover:underline text-m"
               >
                 Reset Password

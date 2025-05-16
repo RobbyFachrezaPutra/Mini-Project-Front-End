@@ -19,9 +19,16 @@ import { IUserParam } from "@/interface/user.interface";
 import * as Yup from "yup";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import Link from "next/link";
+import { useAppDispatch } from "@/lib/redux/hooks";
+import { setRemainingSeats } from "@/lib/redux/slices/seatSlice";
 
 registerLocale("id", id);
+
+
+interface FilterState {
+  seats : number;
+  end_date : string | null;
+}
 
 const EventSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
@@ -69,6 +76,8 @@ export default function EventDetail() {
   const [voucherDialogOpen, setVoucherDialogOpen] = useState(false);
   const [categories, setcategories] = useState<IEventCategoryParam[]>([]);
   const [storedUser, setStoredUser] = useState<IUserParam | null>(null);
+  const dispatch = useAppDispatch();
+
   const router = useRouter();
   const editor = useEditor({
     extensions: [
@@ -195,7 +204,7 @@ export default function EventDetail() {
                 );
 
                 toast.success("Event saved successfully!");
-                router.push("/pages/dashboard");
+                router.push("/dashboard");
               } catch (error) {
                 toast.error("Failed to save event");
               }
@@ -395,7 +404,14 @@ export default function EventDetail() {
                   <button
                     type="button"
                     className="w-[120px] px-4 py-2 bg-sky-400 hover:bg-sky-500 text-slate-800 font-bold rounded-lg shadow transition"
-                    onClick={() => setTicketDialogOpen(true)}
+                    onClick={() => {
+                      const seatState: FilterState = {
+                        seats : values.available_seats,
+                        end_date: values.end_date ? values.end_date.toISOString() : null,
+                      };                
+                      dispatch(setRemainingSeats(seatState));      
+                      setTicketDialogOpen(true)
+                    }}
                   >
                     + Ticket
                   </button>
