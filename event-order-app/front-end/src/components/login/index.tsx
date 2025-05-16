@@ -20,7 +20,7 @@ export default function LoginPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   return (
-    <section className="flex justify-center items-center min-h-screen bg-sky-100">
+    <section className="flex justify-center items-center min-h-screen bg-gradient-to-r from-slate-700 to-slate-900">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-center text-sky-700 md:text-3xl lg:text-4xl">
           Login

@@ -35,7 +35,7 @@ const DashboardPage = () => {
       />
 
       {/* Konten Utama */}
-      <main className="ml-64 p-8 pt-8">
+      <main className="ml-64">
         {/* Events Tab */}
         {activeTab === "events" && <MyEventsTab />}
 

@@ -129,14 +129,14 @@ const TransactionTab = () => {
   };
 
   return (
-    <div className="p-6 bg-sky-50 min-h-screen">
-      <h1 className="text-3xl font-bold text-sky-800 mb-6">
+    <div className="flex-1 min-h-screen bg-stone-100 px-4 sm:px-8 py-8">
+      <h1 className="text-3xl font-bold text-slate-700">
         Transaction Management
       </h1>
 
       {loading && (
         <div className="flex justify-center items-center h-64">
-          <p className="text-gray-600">Loading transactions...</p>
+          <p className="text-slate-500">Loading transactions...</p>
         </div>
       )}
 
@@ -147,55 +147,55 @@ const TransactionTab = () => {
       )}
 
       {!loading && !error && (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-slate-200">
+              <thead className="bg-slate-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Event
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Ticket Type
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Qty
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Payment Proof
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-slate-100">
                 {transactions.length > 0 ? (
                   transactions.map((tx) => (
-                    <tr key={tx.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <tr key={tx.id} className="hover:bg-slate-50 transition">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
                         {tx.event}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                         <div>
                           <p className="font-medium">{tx.user.name}</p>
-                          <p className="text-gray-500">{tx.user.email}</p>
-                          <p className="text-gray-500">{tx.user.phone}</p>
+                          <p className="text-slate-500">{tx.user.email}</p>
+                          <p className="text-slate-400">{tx.user.phone}</p>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                         {tx.ticketType}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                         {tx.quantity}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -207,19 +207,19 @@ const TransactionTab = () => {
                           {tx.status.replace(/_/g, " ")}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                         {tx.date}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                         {tx.paymentProof ? (
                           <button
                             onClick={() => openImageModal(tx.paymentProof)}
-                            className="text-sky-600 hover:text-sky-800 font-medium"
+                            className="text-sky-500 hover:text-sky-700 font-medium"
                           >
                             View Proof
                           </button>
                         ) : (
-                          <span className="text-gray-400">No proof</span>
+                          <span className="text-slate-300">No proof</span>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -248,7 +248,7 @@ const TransactionTab = () => {
                   <tr>
                     <td
                       colSpan={8}
-                      className="px-6 py-4 text-center text-sm text-gray-500"
+                      className="px-6 py-4 text-center text-sm text-slate-500"
                     >
                       No transactions found.
                     </td>
@@ -265,10 +265,12 @@ const TransactionTab = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
             <div className="flex justify-between items-center border-b p-4">
-              <h3 className="text-lg font-semibold">Payment Proof</h3>
+              <h3 className="text-lg font-semibold text-slate-700">
+                Payment Proof
+              </h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-slate-400 hover:text-slate-700"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -296,7 +298,7 @@ const TransactionTab = () => {
             <div className="border-t p-4 flex justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-sky-600 text-white rounded hover:bg-sky-700"
+                className="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600"
               >
                 Close
               </button>

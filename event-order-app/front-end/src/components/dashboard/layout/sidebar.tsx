@@ -14,22 +14,24 @@ const Sidebar = ({
   const router = useRouter();
 
   return (
-    <div className="w-64 bg-white border-r fixed h-full pt-6 p-4">
+    <div className="w-64 bg-slate-700 border-r border-slate-800 fixed h-full pt-6 p-4 shadow-xl">
       <button
         onClick={() => router.push("/")}
-        className="mb-4 pt-4 text-sky-600 hover:underline"
+        className="mb-6 pt-2 text-sky-200 hover:underline hover:text-sky-400 transition"
       >
         ← Back to Home
       </button>
-      <h3 className="font-bold text-lg mb-6 text-sky-800">Menu</h3>
+      <h3 className="font-bold text-lg mb-6 text-sky-100 tracking-wide">
+        Menu
+      </h3>
 
       {/* My Events */}
       <button
         onClick={() => setActiveTab("events")}
-        className={`w-full text-left p-3 rounded-lg font-medium ${
+        className={`w-full text-left p-3 rounded-lg font-medium mb-2 transition ${
           activeTab === "events"
-            ? "bg-sky-100 text-sky-600"
-            : "hover:bg-gray-100"
+            ? "bg-sky-600 text-white shadow"
+            : "text-sky-100 hover:bg-sky-800 hover:text-white"
         }`}
       >
         My Events
@@ -38,10 +40,10 @@ const Sidebar = ({
       {/* Transactions */}
       <button
         onClick={() => setActiveTab("transactions")}
-        className={`w-full text-left p-3 rounded-lg font-medium my-2 ${
+        className={`w-full text-left p-3 rounded-lg font-medium mb-2 transition ${
           activeTab === "transactions"
-            ? "bg-sky-100 text-sky-600"
-            : "hover:bg-gray-100"
+            ? "bg-sky-600 text-white shadow"
+            : "text-sky-100 hover:bg-sky-800 hover:text-white"
         }`}
       >
         Transactions
@@ -50,10 +52,10 @@ const Sidebar = ({
       {/* Statistics */}
       <button
         onClick={() => setActiveTab("statistics")}
-        className={`w-full text-left p-3 rounded-lg font-medium ${
+        className={`w-full text-left p-3 rounded-lg font-medium mb-2 transition ${
           activeTab === "statistics"
-            ? "bg-sky-100 text-sky-600"
-            : "hover:bg-gray-100"
+            ? "bg-sky-600 text-white shadow"
+            : "text-sky-100 hover:bg-sky-800 hover:text-white"
         }`}
       >
         Statistics
@@ -62,10 +64,10 @@ const Sidebar = ({
       {/* Overview */}
       <button
         onClick={() => setActiveTab("overview")}
-        className={`w-full text-left p-3 rounded-lg font-medium ${
+        className={`w-full text-left p-3 rounded-lg font-medium mb-2 transition ${
           activeTab === "overview"
-            ? "bg-sky-100 text-sky-600"
-            : "hover:bg-gray-100"
+            ? "bg-sky-600 text-white shadow"
+            : "text-sky-100 hover:bg-sky-800 hover:text-white"
         }`}
       >
         Overview

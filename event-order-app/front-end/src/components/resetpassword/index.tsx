@@ -42,7 +42,7 @@ const ResetPasswordPage = () => {
       await axios.patch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/reset-password`,
         {
-          currentPassword: formData.current_password, // Ubah ini!
+          currentPassword: formData.current_password,
           newPassword: formData.new_password,
           confirmPassword: formData.confirm_password,
         },
