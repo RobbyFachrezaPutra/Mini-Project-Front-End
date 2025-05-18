@@ -67,10 +67,13 @@ const MyEventsTab = () => {
 
   const handleEditEvent = (eventId: number) => {
     const event = events.find((e) => e.id === eventId);
-    if (event) {
-      setSelectedEvent(event);
-      setIsEditModalOpen(true);
+    if (event?.status === "Publish") {
+      toast.warning("Event tidak bisa diedit karena sudah di Publish!");
+      return;
     }
+    router.push(`/event/${eventId}`);
+    setSelectedEvent(event!);
+    setIsEditModalOpen(true);
   };
   const closeEditModal = () => {
     setIsEditModalOpen(false);
@@ -168,7 +171,7 @@ const MyEventsTab = () => {
             You haven't created any events yet
           </p>
           <button
-            onClick={() => router.push("/event/create")}
+            onClick={() => router.push("/event")}
             className="px-5 py-2 bg-slate-700 text-white rounded-xl shadow hover:bg-slate-800 transition"
           >
             Create Your First Event
@@ -238,7 +241,9 @@ const MyEventsTab = () => {
                     View Attendees
                   </button>
                   <button
-                    onClick={() => handleEditEvent(event.id)}
+                    onClick={() => {
+                      handleEditEvent(event.id);
+                    }}
                     className="px-3 py-1 bg-slate-100 text-slate-700 rounded-md hover:bg-sky-50 hover:text-sky-700 border border-slate-200 transition"
                   >
                     Edit

@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { setRemainingSeats } from "@/lib/redux/slices/seatSlice";
+import { useParams } from "next/navigation";
 
 registerLocale("id", id);
 
@@ -77,8 +78,30 @@ export default function EventDetail() {
   const [categories, setcategories] = useState<IEventCategoryParam[]>([]);
   const [storedUser, setStoredUser] = useState<IUserParam | null>(null);
   const dispatch = useAppDispatch();
-
   const router = useRouter();
+  const params = useParams();
+  const eventId = params?.id?.toString();
+
+  const [initialValues, setInitialValues] = useState<IEvent>({
+    id: 0,
+    organizer_id: 0,
+    name: "",
+    banner_url: "",
+    description: "",
+    category_id: 0,
+    start_date: null,
+    end_date: null,
+    location: "",
+    available_seats: 0,
+    status: "",
+    created_at: new Date(),
+    updated_at: new Date(),
+    tickets: [],
+    vouchers: [],
+    category: null,
+    organizer: null,
+  });
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -122,33 +145,37 @@ export default function EventDetail() {
       .catch((err) => {});
   }, []);
 
+  useEffect(() => {
+  if (eventId) {
+    api
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/events/${eventId}`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        const eventData = res.data.data;
+        setInitialValues({
+          ...eventData,
+          start_date: new Date(eventData.start_date),
+          end_date: new Date(eventData.end_date),
+        });
+        editor?.commands.setContent(eventData.description);
+      })
+      .catch((err) => {
+        toast.error("Failed to load event data");
+      });
+  }
+}, [eventId]);
+
   return (
     <>
       <div className="bg-slate-700 min-h-screen py-8">
         <div className="max-w-md mx-auto p-4 bg-white rounded-2xl shadow-xl border border-slate-200">
           <h1 className="text-3xl font-extrabold mb-6 text-slate-700 text-center tracking-tight">
-            Create New Event
+              {eventId ? "Edit Event" : "Create New Event"}
           </h1>
           <Formik<IEvent>
-            initialValues={{
-              id: 0,
-              organizer_id: 0,
-              name: "",
-              banner_url: "",
-              description: "",
-              category_id: 0,
-              start_date: null,
-              end_date: null,
-              location: "",
-              available_seats: 0,
-              status: "",
-              created_at: new Date(),
-              updated_at: new Date(),
-              tickets: [],
-              vouchers: [],
-              category: null,
-              organizer: null,
-            }}
+            initialValues={initialValues}
+            enableReinitialize={true}
             validationSchema={EventSchema}
             onSubmit={async (values) => {
               try {
@@ -195,14 +222,27 @@ export default function EventDetail() {
                 }));
                 formData.append("vouchers", JSON.stringify(vouchers));
 
-                await api.post(
-                  `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/events`,
-                  formData,
-                  {
-                    withCredentials: true,
-                  }
-                );
-
+                if (eventId) {
+                  // Mode Edit
+                  await api.put(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/events/${eventId}`,
+                    formData,
+                    {
+                      withCredentials: true,
+                    }
+                  );
+                  toast.success("Event updated successfully!");
+                } else {
+                  // Mode Buat
+                  await api.post(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/events`,
+                    formData,
+                    {
+                      withCredentials: true,
+                    }
+                  );
+                  toast.success("Event created successfully!");
+                }
                 toast.success("Event saved successfully!");
                 router.push("/dashboard");
               } catch (error) {
@@ -445,8 +485,8 @@ export default function EventDetail() {
                                 Qty: {ticket.quota} | Price: {ticket.price}
                               </p>
                               <p className="text-slate-600">
-                                Sell: {ticket.sales_start.toLocaleDateString()}{" "}
-                                - {ticket.sales_end.toLocaleDateString()}
+                                Sell: {new Date(ticket.sales_start).toLocaleDateString()}
+                                - {new Date(ticket.sales_end).toLocaleDateString()}
                               </p>
                               <button
                                 type="button"
@@ -485,8 +525,8 @@ export default function EventDetail() {
                                 </p>
                                 <p className="text-slate-600">
                                   Sell:{" "}
-                                  {voucher.sales_start.toLocaleDateString()} -{" "}
-                                  {voucher.sales_end.toLocaleDateString()}
+                                  {new Date(voucher.sales_start).toLocaleDateString()} -{" "}
+                                  {new Date(voucher.sales_end).toLocaleDateString()}
                                 </p>
                                 <button
                                   type="button"

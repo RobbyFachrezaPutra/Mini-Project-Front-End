@@ -99,8 +99,13 @@ const TransactionTab = () => {
     );
   };
 
+
   // Local state update only - no API call
-  const handleReject = (txId: string) => {
+  const handleReject = async (txId: string) => {
+    await axios.put(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/transactions/reject/${txId}`
+    );
+
     setTransactions((prevTransactions) =>
       prevTransactions.map((tx) =>
         tx.id === txId ? { ...tx, status: "rejected" } : tx
