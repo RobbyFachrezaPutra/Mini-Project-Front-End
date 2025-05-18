@@ -15,13 +15,14 @@ import PaymentInfoModal from "../info";
 
 export default function DetailTransaction() {
   const [transactions, setTransactions] = useState<ITransactionParam[]>([]);
+  const [transaction, setTransaction] = useState<ITransactionParam | null>(null);
   const [eventsSearch, setEventsSearch] = useState<IEvent[]>([]);
   const router = useRouter();
   const searchParams = useSearchParams();
   const keyword = searchParams.get('keyword');
   const [loading, setLoading] = useState(true);
   const dispatch = useAppDispatch();
-  const [user, setUser] = useState<IUserParam|null>(null); // misalnya dari API
+  const [user, setUser] = useState<IUserParam|null>(null);
   const [showModal, setShowModal] = useState(false);
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user") || "null");
@@ -89,9 +90,10 @@ export default function DetailTransaction() {
                       className="w-full h-[48px] bg-green-500 hover:bg-green-600 text-white rounded-md"
                       onClick={() => {
                         localStorage.setItem("latest_transaction",JSON.stringify(transaction));
-                        // const data = localStorage.getItem("latest_transaction");
-                        // if (data) 
+                        const detailTrans = JSON.parse(localStorage.getItem("latest_transaction") || "null")  as ITransactionParam;
+                        setTransaction(detailTrans);
                         setShowModal(true);
+                        console.log(showModal);
                       }}
                     >
                       Upload Payment Proof
@@ -103,9 +105,13 @@ export default function DetailTransaction() {
             </div>
           </div>
         </div>
+      {showModal && (
       <PaymentInfoModal
         isOpen={showModal}
-        onClose={() => setShowModal(false)}/>
+        onClose={() => setShowModal(false)}
+      />
+       )
+        }
     </div>
   </>
   );
