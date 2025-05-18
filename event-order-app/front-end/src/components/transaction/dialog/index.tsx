@@ -130,8 +130,11 @@ export default function BuyTicketDialog({
 
   useEffect(() => {
     setTicketPrice(subtotal);
-
   },[subtotal])
+
+  useEffect(() => {
+    if (trans?.status === "Waiting for payment") setShowModal(true);
+  },[trans])
   
   const discount = selectedVoucher?.discount_amount || 0;
   const discountCoupon =
@@ -194,7 +197,6 @@ export default function BuyTicketDialog({
 
       toast.success("Tiket berhasil dibeli!");
       onClose();
-//      router.push("/transaction/info");
     } catch (err) {
       toast.error("Gagal membeli tiket.");
       console.error(err);

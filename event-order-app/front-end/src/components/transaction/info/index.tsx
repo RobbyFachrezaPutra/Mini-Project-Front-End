@@ -19,6 +19,7 @@ export default function PaymentInfoModal({ isOpen, onClose }: PaymentInfoModalPr
 
   useEffect(() => {
     const stored = localStorage.getItem('latest_transaction');
+    console.log(stored);
     if (!stored) return;
   
     try {
