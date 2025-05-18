@@ -57,10 +57,10 @@ export default function TicketDialog({
       .test("is-after-start", "Sales End date must be after Sales start", function (value) {
         return this.parent.sales_end || value >= this.parent.sales_start;
       })
-      .test("is-more-than-event-end-date", "start sales date can't be more than end date event", function (value){
-        return value.toLocaleDateString() < end_date!;
-      }),    
-  
+      .test("is-more-than-event-end-date", "Sales end can't be after event end", function (value) {
+        if (!value || !end_date) return true; // skip if missing
+        return value <= new Date(end_date);
+      })  
   });
   
   return (
