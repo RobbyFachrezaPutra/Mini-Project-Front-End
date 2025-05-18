@@ -5,11 +5,14 @@ import { useEffect, useState } from "react";
 import { IEvent } from "@/interface/event.interface";
 import axios from "axios"; // Sesuaikan path ini
 import { IUserParam } from "@/interface/user.interface";
+import { toast } from "react-toastify";
 const MyEventsTab = () => {
   const router = useRouter();
   const [events, setEvents] = useState<IEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
 
   // Dapatkan token dan organizerId dari tempat penyimpanan yang sesuai
 
@@ -63,7 +66,40 @@ const MyEventsTab = () => {
   };
 
   const handleEditEvent = (eventId: number) => {
-    router.push(`/event/edit?id=${eventId}`);
+    const event = events.find((e) => e.id === eventId);
+    if (event) {
+      setSelectedEvent(event);
+      setIsEditModalOpen(true);
+    }
+  };
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedEvent(null);
+  };
+
+  // Fungsi untuk menyimpan perubahan event
+  const handleUpdateEvent = async () => {
+    if (!selectedEvent) return;
+
+    try {
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/events/${selectedEvent.id}`,
+        selectedEvent,
+        { withCredentials: true }
+      );
+
+      // Update event di state
+      const updatedEvents = events.map((event) =>
+        event.id === selectedEvent.id ? response.data.data : event
+      );
+      setEvents(updatedEvents);
+
+      toast.success("Event updated successfully!");
+      closeEditModal();
+    } catch (err) {
+      console.error("Error updating event:", err);
+      toast.error("Failed to update event");
+    }
   };
 
   const formatDate = (date: Date | string | null) => {
@@ -199,12 +235,7 @@ const MyEventsTab = () => {
                     onClick={() => handleViewAttendees(event.id)}
                     className="text-sky-500 hover:text-sky-700 text-sm font-medium"
                   >
-                    View Attendees (
-                    {event.tickets?.reduce(
-                      (acc, ticket) => acc + (ticket.quota - ticket.remaining),
-                      0
-                    ) || 0}
-                    )
+                    View Attendees
                   </button>
                   <button
                     onClick={() => handleEditEvent(event.id)}

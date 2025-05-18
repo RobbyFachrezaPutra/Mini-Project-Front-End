@@ -122,6 +122,15 @@ export default function LoginPage() {
                   component="div"
                   className="text-red-500 text-sm"
                 />
+
+                <div className="text-right mt-1">
+                  <a
+                    href="/forgot-password"
+                    className="text-sm text-sky-600 hover:text-sky-800"
+                  >
+                    Lupa password?
+                  </a>
+                </div>
               </div>
 
               <button
