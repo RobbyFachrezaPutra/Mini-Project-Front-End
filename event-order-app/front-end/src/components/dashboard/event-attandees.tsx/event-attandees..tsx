@@ -131,15 +131,15 @@ const AttendeesPage = () => {
   }
 
   return (
-    <div className="p-6 bg-sky-100 min-h-screen">
+    <div className="p-6 bg-stone-100 min-h-screen">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-sky-800">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-700">
             Attendees for {eventName}
           </h1>
           <button
             onClick={() => router.push("/dashboard")}
-            className="flex items-center gap-2 text-sky-600 hover:text-sky-800"
+            className="flex items-center gap-2 text-slate-700 "
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

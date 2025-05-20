@@ -99,7 +99,6 @@ const TransactionTab = () => {
     );
   };
 
-
   // Local state update only - no API call
   const handleReject = async (txId: string) => {
     await axios.put(
@@ -134,14 +133,14 @@ const TransactionTab = () => {
   };
 
   return (
-    <div className="flex-1 min-h-screen bg-stone-100 px-4 sm:px-8 py-8">
-      <h1 className="text-3xl font-bold text-slate-700">
+    <div className="flex-1 min-h-screen bg-stone-100 px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+      <h1 className="text-2xl sm:text-3xl font-bold text-slate-700 text-center sm:text-left w-full sm:w-auto">
         Transaction Management
       </h1>
 
       {loading && (
         <div className="flex justify-center items-center h-64">
-          <p className="text-slate-500">Loading transactions...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-sky-500"></div>
         </div>
       )}
 
@@ -152,33 +151,33 @@ const TransactionTab = () => {
       )}
 
       {!loading && !error && (
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-slate-200 mt-4">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200">
               <thead className="bg-slate-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Event
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider hidden sm:table-cell">
                     Ticket Type
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider hidden sm:table-cell">
                     Qty
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider hidden md:table-cell">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Payment Proof
+                  <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Payment
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -187,23 +186,33 @@ const TransactionTab = () => {
                 {transactions.length > 0 ? (
                   transactions.map((tx) => (
                     <tr key={tx.id} className="hover:bg-slate-50 transition">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
-                        {tx.event}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                        <div>
-                          <p className="font-medium">{tx.user.name}</p>
-                          <p className="text-slate-500">{tx.user.email}</p>
-                          <p className="text-slate-400">{tx.user.phone}</p>
+                      <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-slate-900">
+                        <div className="truncate max-w-[100px] sm:max-w-[200px]">
+                          {tx.event}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                        {tx.ticketType}
+                      <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-slate-600">
+                        <div>
+                          <p className="font-medium truncate max-w-[100px] sm:max-w-[150px]">
+                            {tx.user.name}
+                          </p>
+                          <p className="text-slate-500 hidden sm:block truncate max-w-[100px] sm:max-w-[150px]">
+                            {tx.user.email}
+                          </p>
+                          <p className="text-slate-400 hidden md:block truncate max-w-[100px] sm:max-w-[150px]">
+                            {tx.user.phone}
+                          </p>
+                        </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                      <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-slate-600 hidden sm:table-cell">
+                        <div className="truncate max-w-[100px] sm:max-w-[150px]">
+                          {tx.ticketType}
+                        </div>
+                      </td>
+                      <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-slate-600 hidden sm:table-cell">
                         {tx.quantity}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap">
                         <span
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
                             tx.status
@@ -212,35 +221,35 @@ const TransactionTab = () => {
                           {tx.status.replace(/_/g, " ")}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                      <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-slate-500 hidden md:table-cell">
                         {tx.date}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                      <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-slate-500">
                         {tx.paymentProof ? (
                           <button
                             onClick={() => openImageModal(tx.paymentProof)}
                             className="text-sky-500 hover:text-sky-700 font-medium"
                           >
-                            View Proof
+                            View
                           </button>
                         ) : (
                           <span className="text-slate-300">No proof</span>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="px-3 py-2 sm:px-6 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium">
                         {tx.status === "pending" && (
-                          <div className="flex space-x-2">
+                          <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
                             <button
                               onClick={() => {
                                 handleApprove(tx.id);
                               }}
-                              className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs"
+                              className="bg-green-500 hover:bg-green-600 text-white px-2 sm:px-3 py-1 rounded text-xs"
                             >
                               Approve
                             </button>
                             <button
                               onClick={() => handleReject(tx.id)}
-                              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
+                              className="bg-red-500 hover:bg-red-600 text-white px-2 sm:px-3 py-1 rounded text-xs"
                             >
                               Reject
                             </button>
@@ -253,7 +262,7 @@ const TransactionTab = () => {
                   <tr>
                     <td
                       colSpan={8}
-                      className="px-6 py-4 text-center text-sm text-slate-500"
+                      className="px-3 py-2 sm:px-6 sm:py-4 text-center text-sm text-slate-500"
                     >
                       No transactions found.
                     </td>
@@ -268,9 +277,9 @@ const TransactionTab = () => {
       {/* Payment Proof Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
-            <div className="flex justify-between items-center border-b p-4">
-              <h3 className="text-lg font-semibold text-slate-700">
+          <div className="bg-white rounded-lg max-w-lg sm:max-w-2xl md:max-w-4xl w-full max-h-[90vh] overflow-auto">
+            <div className="flex justify-between items-center border-b p-3 sm:p-4">
+              <h3 className="text-base sm:text-lg font-semibold text-slate-700">
                 Payment Proof
               </h3>
               <button
@@ -279,7 +288,7 @@ const TransactionTab = () => {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
+                  className="h-5 w-5 sm:h-6 sm:w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -293,17 +302,17 @@ const TransactionTab = () => {
                 </svg>
               </button>
             </div>
-            <div className="p-4 flex justify-center">
+            <div className="p-3 sm:p-4 flex justify-center">
               <img
                 src={currentImage}
                 alt="Payment Proof"
-                className="max-w-full max-h-[70vh] object-contain"
+                className="max-w-full max-h-[60vh] sm:max-h-[70vh] object-contain"
               />
             </div>
-            <div className="border-t p-4 flex justify-end">
+            <div className="border-t p-3 sm:p-4 flex justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600"
+                className="px-3 sm:px-4 py-1 sm:py-2 bg-sky-500 text-white rounded hover:bg-sky-600 text-sm sm:text-base"
               >
                 Close
               </button>
