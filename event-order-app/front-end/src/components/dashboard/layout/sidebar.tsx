@@ -14,13 +14,16 @@ const Sidebar = ({
   const router = useRouter();
 
   return (
-    <div className="w-64 bg-slate-700 border-r border-slate-800 fixed h-full pt-6 p-4 shadow-xl">
-      <button
-        onClick={() => router.push("/")}
-        className="mb-6 pt-2 text-sky-200 hover:underline hover:text-sky-400 transition"
-      >
-        ← Back to Home
-      </button>
+    <div className="w-64 bg-slate-700 border-r border-slate-800 h-full pt-6 p-4 shadow-xl flex flex-col">
+      <div className="flex justify-between items-center">
+        <button
+          onClick={() => router.push("/")}
+          className="mb-6 pt-2 text-sky-200 hover:underline hover:text-sky-400 transition mt-8 md:mt-0"
+        >
+          ← Back to Home
+        </button>
+      </div>
+
       <h3 className="font-bold text-lg mb-6 text-sky-100 tracking-wide">
         Menu
       </h3>
@@ -47,6 +50,11 @@ const Sidebar = ({
         }`}
       >
         Transactions
+        {pendingTransactions > 0 && (
+          <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+            {pendingTransactions}
+          </span>
+        )}
       </button>
 
       {/* Statistics */}

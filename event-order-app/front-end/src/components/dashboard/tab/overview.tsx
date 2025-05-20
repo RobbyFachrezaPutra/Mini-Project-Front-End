@@ -69,7 +69,9 @@ const OverviewTab = () => {
 
   return (
     <div className="flex-1 min-h-screen bg-stone-100 px-4 sm:px-8 py-8">
-      <h1 className="text-3xl font-bold text-slate-700">Overview</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold text-slate-700 text-center sm:text-left w-full sm:w-auto">
+        Overview
+      </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
         {/* Card 1 */}

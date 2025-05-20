@@ -54,8 +54,24 @@ export default function LoginPage() {
               // 2. Jika ada data.user, anggap sukses
               if (res.data.data?.email) {
                 // Cek field spesifik
-                toast.success("Berhasil login!");
+
                 localStorage.setItem("user", JSON.stringify(res.data.data));
+
+                // Jika token tersedia di response body, simpan untuk API calls
+                if (res.data.token) {
+                  console.log(
+                    "Token received in response body, storing in localStorage"
+                  );
+                  localStorage.setItem("token", res.data.token);
+
+                  api.defaults.headers.common[
+                    "Authorization"
+                  ] = `Bearer ${res.data.token}`;
+                } else {
+                  console.log(
+                    "No token in response body, relying on HttpOnly cookies"
+                  );
+                }
                 dispatch(
                   login({
                     email: res.data.data.email,
@@ -67,6 +83,8 @@ export default function LoginPage() {
                     isLogin: true,
                   })
                 );
+
+                toast.success("Berhasil login!");
                 router.push("/");
               }
               // 3. Jika ada message error
