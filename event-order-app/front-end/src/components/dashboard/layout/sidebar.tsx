@@ -50,11 +50,6 @@ const Sidebar = ({
         }`}
       >
         Transactions
-        {pendingTransactions > 0 && (
-          <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-            {pendingTransactions}
-          </span>
-        )}
       </button>
 
       {/* Statistics */}
