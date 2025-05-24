@@ -97,89 +97,89 @@ export default function DetailTransaction() {
   return (
     <>
       <div className="pt-[80px] px-6 sm:pt-[96px] bg-stone-100 min-h-screen">
-        <div className="mb-6">
-          <Link
-            href="/"
-            className="inline-flex items-center text-sm font-medium text-slate-700 hover:text-sky-400 transition-colors"
+        <div className="fixed top-0 left-0 w-full z-50 bg-slate-700 border-b border-sky-400/40 shadow-lg backdrop-blur-lg h-16 flex items-center px-6">
+          <button
+            onClick={() => router.push("/")}
+            className="text-white hover:text-sky-400 flex items-center gap-2 font-semibold"
           >
-            ← Back to Home
-          </Link>
+            <span className="text-xl">←</span> <span>Back to Home</span>
+          </button>
         </div>
 
-        <div className="flex flex-col space-y-8 max-w-[1200px] mx-auto">
-          {/* Transaction Cards */}
-          <div className="flex justify-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-              {loading ? (
-                <div className="text-slate-600 font-semibold text-center col-span-full py-12">
-                  Loading...
-                </div>
-              ) : transactions.length === 0 ? (
-                <div className="text-center text-slate-500 font-medium col-span-full py-12">
-                  No transactions found.
-                </div>
-              ) : (
-                transactions.map((transaction) => {
-                  const endDateString = transaction.event.end_date;
-                  const endDate = endDateString
-                    ? new Date(endDateString)
-                    : null;
-                  const now = new Date();
-                  const canReview = endDate
-                    ? transaction.status === "approve" && now > endDate
-                    : false;
+        <div className="flex flex-col space-y-8 max-w-6xl mx-auto px-4">
+          {loading ? (
+            <div className="text-slate-600 font-semibold text-center py-12">
+              Loading...
+            </div>
+          ) : transactions.length === 0 ? (
+            <div className="text-center text-slate-500 font-medium py-12">
+              No transactions found.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {transactions.map((transaction) => {
+                const endDate = transaction.event.end_date
+                  ? new Date(transaction.event.end_date)
+                  : null;
+                const now = new Date();
+                const canReview =
+                  endDate && transaction.status === "approve" && now > endDate;
 
-                  return (
-                    <div
-                      key={transaction.id}
-                      className="flex flex-col justify-between bg-white rounded-3xl shadow-md hover:shadow-lg transition-shadow cursor-pointer w-[190px] overflow-hidden"
-                    >
-                      {/* Banner Image */}
-                      <img
-                        src={transaction.event.banner_url}
-                        alt={transaction.event.name}
-                        className="w-full aspect-[3/2] object-cover rounded-t-3xl"
-                      />
+                return (
+                  <div
+                    key={transaction.id}
+                    className="bg-white rounded-3xl shadow-md hover:shadow-lg transition-shadow overflow-hidden flex flex-col"
+                  >
+                    {/* Banner */}
+                    <img
+                      src={transaction.event.banner_url}
+                      alt={transaction.event.name}
+                      className="w-full h-40 object-cover rounded-t-3xl"
+                    />
 
-                      {/* Transaction Info */}
-                      <div className="p-5 flex-grow flex flex-col justify-between min-h-[140px]">
-                        <div className="text-xs font-semibold text-slate-700 mb-1 line-clamp-2">
-                          {transaction.code}
-                        </div>
-                        <div className="text-sm text-gray-500 truncate">
-                          Status:{" "}
-                          <span
-                            className={`font-semibold ${
-                              transaction.status === "approve"
-                                ? "text-green-600"
-                                : transaction.status === "Waiting for payment"
-                                ? "text-yellow-600"
-                                : "text-red-600"
-                            }`}
-                          >
-                            {transaction.status}
-                          </span>
-                        </div>
-                        <div className="mt-3 text-slate-800 font-semibold text-lg">
-                          💵{" "}
-                          {Number(transaction.final_price).toLocaleString(
-                            "id-ID",
-                            {
-                              style: "currency",
-                              currency: "IDR",
-                              minimumFractionDigits: 0,
-                              maximumFractionDigits: 0,
-                            }
-                          )}
-                        </div>
+                    {/* Info */}
+                    <div className="p-5 flex-grow flex flex-col space-y-2">
+                      <div className="text-sm font-semibold text-sky-600">
+                        {transaction.code}
                       </div>
+                      <div className="text-base font-bold text-slate-800">
+                        {transaction.event.name}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Status:{" "}
+                        <span
+                          className={`font-semibold ${
+                            transaction.status === "approve"
+                              ? "text-green-600"
+                              : transaction.status === "Waiting for payment"
+                              ? "text-yellow-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {transaction.status}
+                        </span>
+                      </div>
+                      <div className="text-lg font-semibold text-slate-800 mt-2">
+                        💵{" "}
+                        {Number(transaction.final_price).toLocaleString(
+                          "id-ID",
+                          {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                          }
+                        )}
+                      </div>
+                    </div>
 
-                      {/* Upload Payment Proof Button */}
-                      {transaction.status === "Waiting for payment" && (
-                        <div className="p-4 pt-0">
+                    {/* Button Area */}
+                    {(transaction.status === "Waiting for payment" ||
+                      canReview) && (
+                      <div className="p-5 pt-0 flex flex-col gap-2">
+                        {transaction.status === "Waiting for payment" && (
                           <button
                             type="button"
-                            className="w-full h-[48px] bg-slate-700 hover:bg-slate-800 text-white rounded-b-3xl font-semibold transition-colors"
+                            className="w-full h-[44px] bg-slate-700 hover:bg-slate-800 text-white rounded-xl font-semibold transition-colors"
                             onClick={() => {
                               localStorage.setItem(
                                 "latest_transaction",
@@ -190,27 +190,23 @@ export default function DetailTransaction() {
                           >
                             Upload Payment Proof
                           </button>
-                        </div>
-                      )}
-
-                      {/* Review Button */}
-                      {canReview && (
-                        <div className="p-4 pt-0">
+                        )}
+                        {canReview && (
                           <button
                             type="button"
-                            className="w-full h-[48px] bg-sky-400 hover:bg-sky-500 text-white rounded-b-3xl font-semibold transition-colors"
+                            className="w-full h-[44px] bg-sky-500 hover:bg-sky-600 text-white rounded-xl font-semibold transition-colors"
                             onClick={() => openReviewModal(transaction)}
                           >
                             Give Review
                           </button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })
-              )}
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          </div>
+          )}
         </div>
 
         {/* Payment Modal */}

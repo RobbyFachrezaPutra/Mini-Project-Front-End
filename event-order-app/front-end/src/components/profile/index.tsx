@@ -168,6 +168,8 @@ const ProfilePage = () => {
   };
 
   const handleSave = async () => {
+    console.log("🚀 Mulai proses handleSave");
+
     try {
       const token = getCookie("access_token");
 
@@ -220,22 +222,22 @@ const ProfilePage = () => {
     return <div className="text-center text-lg text-red-500">{error}</div>;
 
   return (
-    <section className="min-h-screen bg-stone-100 flex flex-col items-center pt-10 pb-24">
+    <section className="min-h-screen bg-stone-100 flex flex-col items-center pt-10">
       {/* Tombol Back to Home */}
-      <div className="w-full max-w-4xl flex items-center mb-8">
+      <div className="fixed top-0 left-0 w-full z-50 bg-slate-700 border-b border-sky-400/40 shadow-lg backdrop-blur-lg h-16 flex items-center px-6">
         <button
           onClick={() => router.push("/")}
-          className="text-slate-700 hover:text-sky-600 flex items-center gap-1 text-base font-semibold"
+          className="text-white hover:text-sky-400 flex items-center gap-2 font-semibold"
         >
           <span className="text-xl">←</span> <span>Back to Home</span>
         </button>
       </div>
 
       {/* Card Profile */}
-      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col md:flex-row gap-0 md:gap-10 px-4 md:px-16 py-12 border border-slate-200">
+      <div className="w-full min-h-screen bg-slate-100 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-6 md:gap-10 px-4 md:px-16 py-6 md:py-12 border border-slate-200">
         {/* Sidebar Profile */}
-        <div className="flex flex-col items-center md:items-start w-full md:w-1/3 mb-8 md:mb-0">
-          <div className="relative flex flex-col items-center w-full">
+        <div className="flex flex-col items-center md:items-start w-full md:w-1/3 mb-8 md:mb-0 pt-6">
+          <div className="relative flex flex-col items-center w-full pt-12">
             <img
               src={
                 formData.profile_picture?.startsWith("data:")
@@ -248,7 +250,7 @@ const ProfilePage = () => {
                     }`
               }
               alt="Profile"
-              className="w-44 h-44 rounded-full border-4 border-slate-700 shadow-xl object-cover bg-slate-100"
+              className="w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-slate-700 shadow-xl object-cover bg-slate-100"
               onClick={() => isEditing && fileInputRef.current?.click()}
               onError={(e) => {
                 (e.target as HTMLImageElement).src =
@@ -299,7 +301,7 @@ const ProfilePage = () => {
             )}
             {/* Role rata tengah */}
             <div className="w-full flex justify-center mt-10">
-              <span className="inline-block bg-slate-100 text-slate-700 px-6 py-2 rounded-full text-base font-semibold shadow">
+              <span className="inline-block text-slate-100 bg-slate-700 px-6 py-2 rounded-full text-base font-semibold shadow">
                 {formData.role?.toUpperCase() || "-"}
               </span>
             </div>
@@ -314,13 +316,13 @@ const ProfilePage = () => {
               {formData.first_name} {formData.last_name}
             </h1>
             <div className="flex items-center mt-2">
-              <span className="inline-block bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm font-semibold shadow">
+              <span className="inline-block text-stone-100 bg-slate-700 px-3 py-1 rounded-full text-sm font-semibold shadow">
                 {formData.email}
               </span>
             </div>
           </div>
           {/* Inputan */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div>
               <label className="font-medium text-slate-700">First Name:</label>
               <input
@@ -329,10 +331,10 @@ const ProfilePage = () => {
                 value={formData.first_name}
                 onChange={handleChange}
                 disabled={!isEditing}
-                className={`w-full p-3 border rounded mt-1 text-lg ${
+                className={`w-full p-3 border-l-8 border-b-2 border-slate-700 rounded-l-lg rounded-r-lg mt-1 text-lg ${
                   isEditing
-                    ? "bg-white border-slate-400"
-                    : "bg-slate-100 border-slate-200"
+                    ? "bg-white border-slate-700"
+                    : "bg-slate-100 border-slate-700"
                 }`}
               />
             </div>
@@ -344,7 +346,7 @@ const ProfilePage = () => {
                 value={formData.last_name}
                 onChange={handleChange}
                 disabled={!isEditing}
-                className={`w-full p-3 border rounded mt-1 text-lg ${
+                className={`w-full p-3 border-l-8 border-b-2 border-slate-700 rounded-l-lg rounded-r-lg mt-1 text-lg ${
                   isEditing
                     ? "bg-white border-slate-400"
                     : "bg-slate-100 border-slate-200"
@@ -353,7 +355,7 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div>
               <label className="font-medium text-slate-700">
                 Referral Code:
@@ -363,7 +365,7 @@ const ProfilePage = () => {
                 name="referral_code"
                 value={formData.referral_code}
                 disabled
-                className="w-full p-3 border rounded mt-1 bg-slate-100 border-slate-200 font-mono tracking-wider text-lg"
+                className="w-full p-3 border-l-8 border-b-2 border-slate-700 rounded-l-lg rounded-r-lg mt-1 text-lg  font-mono tracking-wider"
               />
             </div>
             <div>
@@ -373,7 +375,7 @@ const ProfilePage = () => {
                 name="points"
                 value={formData.points}
                 disabled
-                className="w-full p-3 border rounded mt-1 bg-slate-100 border-slate-200 font-bold text-slate-7  00 text-lg"
+                className="w-full p-3 border-l-8 border-b-2 border-slate-700 rounded-l-lg rounded-r-lg mt-1 text-lg  font-bold text-slate-7  00 "
               />
               {userPoints.length > 0 && (
                 <div className="mt-2">
@@ -434,7 +436,7 @@ const ProfilePage = () => {
                   Save Changes
                 </button>
                 <button
-                  className="bg-slate-400 text-white px-6 py-2 rounded-lg hover:bg-slate-500 shadow text-lg"
+                  className="bg-slate-500 text-white px-6 py-2 rounded-lg hover:bg-slate-500 shadow text-lg"
                   onClick={() => {
                     setIsEditing(false);
                   }}

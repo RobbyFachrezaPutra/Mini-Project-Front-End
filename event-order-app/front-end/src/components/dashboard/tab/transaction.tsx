@@ -133,9 +133,9 @@ const TransactionTab = () => {
   };
 
   return (
-    <div className="flex-1 min-h-screen bg-stone-100 px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+    <div className="flex-1 min-h-screen bg-stone-100 px-2 sm:px-4 md:px-6 lg:px-8 py-8 sm:py-6 ">
       <h1 className="text-2xl sm:text-3xl font-bold text-slate-700 text-center sm:text-left w-full sm:w-auto">
-        Transaction Management
+        Transactions
       </h1>
 
       {loading && (
@@ -151,7 +151,7 @@ const TransactionTab = () => {
       )}
 
       {!loading && !error && (
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-slate-200 mt-4">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-slate-200 mt-6">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200">
               <thead className="bg-slate-50">

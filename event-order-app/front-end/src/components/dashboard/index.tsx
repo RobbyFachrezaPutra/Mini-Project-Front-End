@@ -77,7 +77,7 @@ const DashboardPage = () => {
       )}
 
       {/* Konten Utama - responsif dengan margin yang berbeda */}
-      <main className="pt-4 px-4 md:ml-64 transition-all duration-300">
+      <main className="md:ml-64 transition-all duration-300">
         {/* Events Tab */}
         {activeTab === "events" && <MyEventsTab />}
 

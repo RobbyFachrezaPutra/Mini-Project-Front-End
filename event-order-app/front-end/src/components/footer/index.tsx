@@ -1,18 +1,21 @@
 export default function Footer() {
   return (
     <footer className="bg-gray-800 pt-24 pb-12">
-      <div className="container">
-        <div className="flex flex-wrap">
-          <div className="w-full px-4 mb-12 text-gray-300 font-medium md:w-1/3">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row md:flex-wrap md:justify-between">
+          {/* Kolom 1 */}
+          <div className="w-full md:w-1/3 px-4 mb-12 text-gray-300 font-medium">
             <h2 className="font-bold text-4xl text-white">TIN(k)</h2>
             <h3 className="font-bold text-2xl mb-2">Contact Us</h3>
             <p>XYZ@mail.com</p>
             <p>
               Jl. Pahlawan No.72, Neglasari, Kec. Cibeunying Kaler,
-              <span>Kota Bandung, Jawa Barat 40123</span>{" "}
+              <span> Kota Bandung, Jawa Barat 40123</span>
             </p>
           </div>
-          <div className="w-full px-4 mb-12 text-gray-300 font-medium md:w-1/3">
+
+          {/* Kolom 2 */}
+          <div className="w-full md:w-1/3 px-4 mb-12 text-gray-300 font-medium">
             <h3 className="font-semibold text-xl text-white mb-5">
               Tentang Tiketin.com
             </h3>
@@ -20,7 +23,7 @@ export default function Footer() {
               <li>
                 <a
                   href="/login"
-                  className="inline-block text-base hover:text-gray-600 mb-3"
+                  className="inline-block text-base hover:text-gray-400 mb-3"
                 >
                   Masuk
                 </a>
@@ -28,7 +31,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#"
-                  className="inline-block text-base hover:text-gray-600 mb-3"
+                  className="inline-block text-base hover:text-gray-400 mb-3"
                 >
                   Lihat Event
                 </a>
@@ -36,7 +39,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#"
-                  className="inline-block text-base hover:text-gray-600 mb-3"
+                  className="inline-block text-base hover:text-gray-400 mb-3"
                 >
                   FAQ
                 </a>
@@ -44,20 +47,22 @@ export default function Footer() {
               <li>
                 <a
                   href="#"
-                  className="inline-block text-base hover:text-gray-600 mb-3"
+                  className="inline-block text-base hover:text-gray-400 mb-3"
                 >
                   Syarat dan ketentuan
                 </a>
               </li>
             </ul>
           </div>
-          <div className="w-full px-4 mb-12 text-gray-300 font-medium md:w-1/3">
+
+          {/* Kolom 3 */}
+          <div className="w-full md:w-1/3 px-4 mb-12 text-gray-300 font-medium">
             <h3 className="font-semibold text-xl text-white mb-5">Blog</h3>
-            <ul className="text-gray-300">
+            <ul className="text-slate-300">
               <li>
                 <a
                   href="#"
-                  className="inline-block text-base hover:text-gray-600 mb-3"
+                  className="inline-block text-base hover:text-gray-400 mb-3"
                 >
                   Life style
                 </a>
@@ -65,7 +70,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#about"
-                  className="inline-block text-base hover:text-gray-600 mb-3"
+                  className="inline-block text-base hover:text-gray-400 mb-3"
                 >
                   Sportainment
                 </a>
@@ -73,7 +78,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#skills"
-                  className="inline-block text-base hover:text-gray-600 mb-3"
+                  className="inline-block text-base hover:text-gray-400 mb-3"
                 >
                   Culiner
                 </a>
@@ -81,7 +86,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#portfolio"
-                  className="inline-block text-base hover:text-gray-600 mb-3"
+                  className="inline-block text-base hover:text-gray-400 mb-3"
                 >
                   Travel
                 </a>
@@ -89,7 +94,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#experience"
-                  className="inline-block text-base hover:text-gray-600 mb-3"
+                  className="inline-block text-base hover:text-gray-400 mb-3"
                 >
                   Experience
                 </a>
@@ -97,7 +102,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#testimonials"
-                  className="inline-block text-base hover:text-gray-600 mb-3"
+                  className="inline-block text-base hover:text-gray-400 mb-3"
                 >
                   Testimonials
                 </a>
@@ -105,13 +110,16 @@ export default function Footer() {
             </ul>
           </div>
         </div>
+
+        {/* Footer bawah */}
         <div className="w-full pt-10 border-t border-slate-700">
-          <div className="flex items-center justify-center">
-            <p className="text-gray-300">
-              Created by Robby Fachreza Putra and Iqbal Maulana using
+          <div className="flex items-center justify-center text-center">
+            <p className="text-gray-300 text-sm sm:text-base">
+              Created by Robby Fachreza Putra and Iqbal Maulana using{" "}
               <a
                 href="https://tailwindcss.com"
                 target="_blank"
+                rel="noopener noreferrer"
                 className="font-bold text-sky-500"
               >
                 Tailwind CSS

@@ -8,6 +8,7 @@ interface IAuth {
   role: string;
   referral_code: string;
   isLogin: boolean;
+  access_token: string;
 }
 
 const initialState: IAuth = {
@@ -18,6 +19,7 @@ const initialState: IAuth = {
   role: "",
   referral_code: "",
   isLogin: false,
+  access_token: "",
 };
 
 export const authSlice = createSlice({
@@ -32,9 +34,17 @@ export const authSlice = createSlice({
       state.role = action.payload.role;
       state.referral_code = action.payload.referral_code;
       state.isLogin = true;
+      state.access_token = action.payload.access_token;
     },
     logout: (state: IAuth) => {
+      state.email = "";
+      state.first_name = "";
+      state.last_name = "";
+      state.profile_picture = "";
+      state.role = "";
+      state.referral_code = "";
       state.isLogin = false;
+      state.access_token = "";
     },
   },
 });

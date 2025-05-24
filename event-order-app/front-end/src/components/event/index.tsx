@@ -25,10 +25,9 @@ import { useParams } from "next/navigation";
 
 registerLocale("id", id);
 
-
 interface FilterState {
-  seats : number;
-  end_date : string | null;
+  seats: number;
+  end_date: string | null;
 }
 
 const EventSchema = Yup.object().shape({
@@ -146,32 +145,35 @@ export default function EventDetail() {
   }, []);
 
   useEffect(() => {
-  if (eventId) {
-    api
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/events/${eventId}`, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        const eventData = res.data.data;
-        setInitialValues({
-          ...eventData,
-          start_date: new Date(eventData.start_date),
-          end_date: new Date(eventData.end_date),
+    if (eventId) {
+      api
+        .get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/eventorder/events/${eventId}`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((res) => {
+          const eventData = res.data.data;
+          setInitialValues({
+            ...eventData,
+            start_date: new Date(eventData.start_date),
+            end_date: new Date(eventData.end_date),
+          });
+          editor?.commands.setContent(eventData.description);
+        })
+        .catch((err) => {
+          toast.error("Failed to load event data");
         });
-        editor?.commands.setContent(eventData.description);
-      })
-      .catch((err) => {
-        toast.error("Failed to load event data");
-      });
-  }
-}, [eventId]);
+    }
+  }, [eventId]);
 
   return (
     <>
-      <div className="bg-slate-700 min-h-screen py-8">
-        <div className="max-w-md mx-auto p-4 bg-white rounded-2xl shadow-xl border border-slate-200">
+      <div className="bg-slate-700 min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md mx-auto p-6 sm:p-8 bg-white rounded-2xl shadow-xl border border-slate-200">
           <h1 className="text-3xl font-extrabold mb-6 text-slate-700 text-center tracking-tight">
-              {eventId ? "Edit Event" : "Create New Event"}
+            {eventId ? "Edit Event" : "Create New Event"}
           </h1>
           <Formik<IEvent>
             initialValues={initialValues}
@@ -446,11 +448,13 @@ export default function EventDetail() {
                     className="w-[120px] px-4 py-2 bg-sky-400 hover:bg-sky-500 text-slate-800 font-bold rounded-lg shadow transition"
                     onClick={() => {
                       const seatState: FilterState = {
-                        seats : values.available_seats,
-                        end_date: values.end_date ? values.end_date.toISOString() : null,
-                      };                
-                      dispatch(setRemainingSeats(seatState));      
-                      setTicketDialogOpen(true)
+                        seats: values.available_seats,
+                        end_date: values.end_date
+                          ? values.end_date.toISOString()
+                          : null,
+                      };
+                      dispatch(setRemainingSeats(seatState));
+                      setTicketDialogOpen(true);
                     }}
                   >
                     + Ticket
@@ -485,8 +489,14 @@ export default function EventDetail() {
                                 Qty: {ticket.quota} | Price: {ticket.price}
                               </p>
                               <p className="text-slate-600">
-                                Sell: {new Date(ticket.sales_start).toLocaleDateString()}
-                                - {new Date(ticket.sales_end).toLocaleDateString()}
+                                Sell:{" "}
+                                {new Date(
+                                  ticket.sales_start
+                                ).toLocaleDateString()}
+                                -{" "}
+                                {new Date(
+                                  ticket.sales_end
+                                ).toLocaleDateString()}
                               </p>
                               <button
                                 type="button"
@@ -525,8 +535,13 @@ export default function EventDetail() {
                                 </p>
                                 <p className="text-slate-600">
                                   Sell:{" "}
-                                  {new Date(voucher.sales_start).toLocaleDateString()} -{" "}
-                                  {new Date(voucher.sales_end).toLocaleDateString()}
+                                  {new Date(
+                                    voucher.sales_start
+                                  ).toLocaleDateString()}{" "}
+                                  -{" "}
+                                  {new Date(
+                                    voucher.sales_end
+                                  ).toLocaleDateString()}
                                 </p>
                                 <button
                                   type="button"

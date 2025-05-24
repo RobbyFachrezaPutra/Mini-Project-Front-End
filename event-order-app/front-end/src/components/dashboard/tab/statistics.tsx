@@ -78,7 +78,7 @@ const StatisticTab = () => {
   }, []);
 
   return (
-    <div className="flex-1 min-h-screen bg-stone-100 px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+    <div className="flex-1 min-h-screen bg-stone-100 px-2 sm:px-4 md:px-6 lg:px-8 py-8 sm:py-6 ">
       <h1 className="text-2xl sm:text-3xl font-bold text-slate-700 text-center sm:text-left w-full sm:w-auto">
         Statistics
       </h1>
@@ -103,7 +103,7 @@ const StatisticTab = () => {
       )}
 
       {!loading && !error && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-8 mt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-8 mt-6">
           {/* Tickets by Category */}
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md border border-slate-200 hover:shadow-lg transition">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-700 mb-3 sm:mb-4">

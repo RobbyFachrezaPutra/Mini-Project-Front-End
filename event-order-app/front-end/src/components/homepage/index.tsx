@@ -71,22 +71,23 @@ export default function HomePage() {
   const eventsToShow = keyword ? eventsSearch : events;
 
   return (
-    <div className="pt-24 md:pt-28 lg:pt-30 px-24 mb-24 bg-gradient-to-b from-stone-100 to-white">
-      <div className="flex flex-col space-y-6">
+    <div className="pt-24 md:pt-28 lg:pt-30 px-4 sm:px-6 md:px-12 lg:px-24 mb-24 bg-gradient-to-b from-stone-100 to-white">
+      <div className="flex flex-col space-y-6 max-w-[1280px] mx-auto">
         {/* Banner */}
         <div className="px-4 sm:px-6 lg:px-8">
-          <div className="w-full h-60 sm:h-70 md:h-80  bg-gradient-to-r from-sky-500 via-sky-600 to-sky-700 flex items-center justify-center rounded-2xl shadow-lg relative overflow-hidden">
+          <div className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 bg-gradient-to-r from-sky-500 via-sky-600 to-sky-700 flex items-center justify-center rounded-2xl shadow-lg relative overflow-hidden">
             {/* Decorative Blur Circles */}
-            <div className="absolute left-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2"></div>
-            <div className="absolute right-0 bottom-0 w-40 h-40 bg-white/10 rounded-full blur-2xl translate-x-1/3 translate-y-1/3"></div>
-            <div className="text-center px-2 z-10">
-              <h1 className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg">
+            <div className="absolute left-0 top-0 w-24 h-24 sm:w-28 sm:h-28 bg-white/10 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2"></div>
+            <div className="absolute right-0 bottom-0 w-32 h-32 sm:w-36 sm:h-36 bg-white/10 rounded-full blur-2xl translate-x-1/3 translate-y-1/3"></div>
+
+            <div className="text-center px-4 sm:px-6 z-10 max-w-4xl">
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white drop-shadow-lg leading-tight">
                 Selamat Datang di{" "}
                 <span className="text-sky-200 md:text-sky-300 font-extrabold tracking-wide">
                   Tiketin.com!
                 </span>
               </h1>
-              <h2 className="text-xl md:text-3xl font-semibold mt-2 text-white drop-shadow">
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold mt-2 text-white drop-shadow leading-snug">
                 Bukan Sekadar Event.{" "}
                 <span className="text-yellow-200 font-bold">Ini Movement!</span>
               </h2>
@@ -97,7 +98,7 @@ export default function HomePage() {
         {/* Event Cards */}
 
         <section>
-          <h1 className="px-8 pt-8 text-3xl font-bold text-slate-700 mb-6">
+          <h1 className="px-4 sm:px-6 lg:px-8 pt-8 text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-700 mb-6">
             Event Terbaru
           </h1>
 

@@ -20,8 +20,8 @@ export default function LoginPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   return (
-    <section className="flex justify-center items-center min-h-screen bg-gradient-to-r from-slate-700 to-slate-900">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+    <section className="flex justify-center items-center min-h-screen bg-gradient-to-r from-slate-700 to-slate-900 px-4">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-md sm:max-w-lg md:max-w-md lg:max-w-lg">
         <h1 className="text-2xl font-bold mb-6 text-center text-sky-700 md:text-3xl lg:text-4xl">
           Login
         </h1>
@@ -81,6 +81,7 @@ export default function LoginPage() {
                     role: res.data.data.role,
                     referral_code: res.data.data.referral_code,
                     isLogin: true,
+                    access_token: res.data.token || "",
                   })
                 );
 
