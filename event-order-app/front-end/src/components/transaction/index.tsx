@@ -45,8 +45,8 @@ export default function EventTransaction() {
       Highlight,
     ],
     content: "",
-    editable: false,    
-    immediatelyRender: false,     
+    editable: false,
+    immediatelyRender: false,
   });
 
   useEffect(() => {
@@ -81,128 +81,127 @@ export default function EventTransaction() {
 
   return (
     <>
-      <div className="mb-4 mt-6 max-w-6xl mx-auto px-4">
-        <Link
-          href="/"
-          className="inline-flex items-center text-sm text-sky-500 hover:text-sky-700 transition-colors font-semibold"
-        >
-          <span className="mr-1">←</span>
-          Kembali ke Beranda
-        </Link>
-      </div>
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-stone-100">
+        {/* Tombol Kembali */}
+        <div className="fixed top-0 left-0 w-full z-50 bg-slate-700 border-b border-sky-400/40 shadow-lg backdrop-blur-lg h-16 flex items-center px-6">
+          <button
+            onClick={() => router.push("/")}
+            className="text-white hover:text-sky-400 flex items-center gap-2 font-semibold"
+          >
+            <span className="text-xl">←</span> <span>Back to Home</span>
+          </button>
+        </div>
 
-      <div className="flex flex-col lg:flex-row justify-center mx-auto mt-8 p-4 md:p-8 gap-8 max-w-6xl">
-        {/* Kolom kiri: gambar & deskripsi */}
-        <div className="lg:w-2/3 w-full flex flex-col gap-6">
-          <div className="rounded-2xl overflow-hidden shadow-xl border border-slate-200 bg-slate-50 relative group">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 max-w-7xl mx-auto px-4 py-20">
+          {/* Bagian Gambar & Label */}
+          <div className="lg:w-2/3 relative">
             <img
               src={event.banner_url}
               alt={event.name}
-              className="w-full h-72 md:h-96 object-cover transition-transform duration-300 group-hover:scale-105"
+              className="w-full h-64 lg:h-96  rounded-2xl object-cover transition-transform duration-300 hover:scale-105"
             />
-            <span className="absolute top-4 left-4 bg-sky-400 text-slate-800 text-xs font-bold px-3 py-1 rounded-full shadow border border-sky-200 uppercase tracking-wider">
+            <span className="absolute top-4 left-4 bg-sky-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow uppercase tracking-wide">
               {event.category?.name || "Umum"}
             </span>
             {event.available_seats === 0 && (
-              <span className="absolute top-4 right-4 bg-rose-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow border border-rose-200 uppercase tracking-wider">
+              <span className="absolute top-4 right-4 bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow uppercase tracking-wide">
                 Sold Out
               </span>
             )}
           </div>
-        </div>
-        {/* Kolom kanan: detail */}
-        <div className="lg:w-1/3 w-full flex flex-col justify-between p-6 md:p-8 shadow-2xl rounded-2xl h-fit bg-slate-700 border border-slate-200">
-          {/* Konten atas */}
-          <div className="space-y-4">
-            <h1 className="text-3xl font-extrabold text-sky-400 mb-2">
-              {event.name}
-            </h1>
-            <div className="flex items-center gap-2 text-slate-200">
-              <span role="img" aria-label="location">
-                📍
-              </span>
-              <span className="text-base">{event.location}</span>
-            </div>
-            <div className="flex items-center gap-2 text-slate-200">
-              <span role="img" aria-label="calendar">
-                📅
-              </span>
-              <span>
-                {event.start_date
-                  ? new Date(event.start_date).toLocaleString("id-ID", {
-                      dateStyle: "long",
-                      timeStyle: "short",
-                    })
-                  : null}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-slate-200">
-              <span role="img" aria-label="clock">
-                🕒
-              </span>
-              <span>
-                Sampai:{" "}
-                {event.end_date
-                  ? new Date(event.end_date).toLocaleString("id-ID", {
-                      dateStyle: "long",
-                      timeStyle: "short",
-                    })
-                  : null}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-sky-200">
-              <span role="img" aria-label="ticket">
-                🎟️
-              </span>
-              <span className="text-lg font-bold">
-                Harga Mulai: Rp
-                {Math.min(
-                  ...event.tickets.map((t) => t.price)
-                ).toLocaleString()}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-emerald-400 font-semibold">
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-1"></span>
-              Sisa Kursi: {event.available_seats}
-            </div>
-            <div className="flex items-center gap-2 text-slate-300">
-              <span role="img" aria-label="user">
-                👤
-              </span>
-              <span>
-                Diselenggarakan oleh:{" "}
-                <span className="font-semibold text-sky-300">
-                  {event.organizer?.first_name || event.organizer_id}
+
+          {/* Bagian Detail Event */}
+          <div className="lg:w-1/3 w-full bg-white dark:bg-slate-800 rounded-2xl shadow-md p-6 lg:p-8 flex flex-col justify-between">
+            <div className="space-y-5">
+              <h1 className="text-3xl font-extrabold text-sky-700">
+                {event.name}
+              </h1>
+              <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300 text-base">
+                <span role="img" aria-label="location" className="text-lg">
+                  📍
                 </span>
-              </span>
+                <span>{event.location}</span>
+              </div>
+              <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300 text-base">
+                <span role="img" aria-label="calendar" className="text-lg">
+                  📅
+                </span>
+                <span>
+                  {event.start_date
+                    ? new Date(event.start_date).toLocaleString("id-ID", {
+                        dateStyle: "long",
+                        timeStyle: "short",
+                      })
+                    : null}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300 text-base">
+                <span role="img" aria-label="clock" className="text-lg">
+                  🕒
+                </span>
+                <span>
+                  Sampai:{" "}
+                  {event.end_date
+                    ? new Date(event.end_date).toLocaleString("id-ID", {
+                        dateStyle: "long",
+                        timeStyle: "short",
+                      })
+                    : null}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 text-sky-700 dark:text-sky-400 font-semibold text-lg">
+                <span role="img" aria-label="ticket" className="text-xl">
+                  🎟️
+                </span>
+                <span>
+                  Harga Mulai: Rp{" "}
+                  {Math.min(
+                    ...event.tickets.map((t) => t.price)
+                  ).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 text-emerald-600 font-semibold text-base">
+                <span className="inline-block w-3 h-3 rounded-full bg-emerald-600"></span>
+                Sisa Kursi: {event.available_seats}
+              </div>
+              <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300 text-base">
+                <span role="img" aria-label="user" className="text-lg">
+                  👤
+                </span>
+                <span>
+                  Diselenggarakan oleh:{" "}
+                  <span className="font-semibold text-sky-600 dark:text-sky-400">
+                    {event.organizer?.first_name || event.organizer_id}
+                  </span>
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-8 flex flex-col gap-4">
+              <button
+                type="button"
+                className={`w-full py-3 rounded-lg font-bold text-white bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 transition-shadow shadow-md disabled:opacity-50 flex items-center justify-center gap-2`}
+                onClick={handleOpenDialog}
+                disabled={event.available_seats === 0}
+              >
+                <span role="img" aria-label="ticket" className="text-xl">
+                  🎟️
+                </span>
+                Beli Tiket
+              </button>
+              <button
+                type="button"
+                className="w-full py-3 rounded-lg border-2 border-sky-600 text-sky-600 font-semibold hover:bg-sky-100 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"
+              >
+                <span role="img" aria-label="share" className="text-lg">
+                  🔗
+                </span>
+                Bagikan Event
+              </button>
             </div>
           </div>
-
-          <div className="border-t border-slate-500 my-6"></div>
-
-          <div className="flex flex-col gap-3">
-            <button
-              type="button"
-              className={`bg-gradient-to-r from-sky-400 to-sky-500 text-slate-800 font-bold px-6 py-3 rounded-xl hover:from-sky-500 hover:to-sky-400 hover:text-white transition-colors w-full shadow-lg flex items-center justify-center gap-2 disabled:opacity-60`}
-              onClick={handleOpenDialog}
-              disabled={event.available_seats === 0}
-            >
-              <span role="img" aria-label="ticket">
-                🎟️
-              </span>
-              Beli Tiket
-            </button>
-            <button
-              type="button"
-              className="border-2 border-sky-400 text-sky-400 font-semibold px-6 py-3 rounded-xl hover:bg-sky-50 hover:text-slate-700 transition-colors w-full flex items-center justify-center gap-2"
-            >
-              <span role="img" aria-label="share">
-                🔗
-              </span>
-              Bagikan Event
-            </button>
-          </div>
         </div>
+
         <BuyTicketDialog
           open={isDialogOpen}
           onClose={handleCloseDialog}

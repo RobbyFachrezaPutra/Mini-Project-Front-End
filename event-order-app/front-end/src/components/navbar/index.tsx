@@ -32,7 +32,16 @@ const Navbar = () => {
 
   const handleLogout = () => {
     deleteCookie("access_token");
+    deleteCookie("refresh_token");
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
+
+    if (typeof window !== "undefined") {
+      // Pastikan kode ini hanya dijalankan di browser
+      const api = require("@/lib/axiosInstance").default;
+      delete api.defaults.headers.common["Authorization"];
+    }
+
     toast.success("Log out successfully");
     refreshUser();
     router.refresh();
@@ -90,7 +99,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 px-0 py-0 shadow-lg backdrop-blur-lg border-b border-sky-400/40 bg-slate-700">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link

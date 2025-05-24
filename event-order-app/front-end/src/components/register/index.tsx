@@ -22,9 +22,9 @@ const RegisterSchema = Yup.object().shape({
 export default function RegisterPage() {
   const router = useRouter();
   return (
-    <section className="flex justify-center items-center min-h-screen bg-gradient-to-r from-slate-700 to-slate-900">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center text-sky-700 md:text-3xl lg:text-4xl">
+    <section className="flex justify-center items-center min-h-screen bg-gradient-to-r from-slate-700 to-slate-900 px-4">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-md sm:max-w-lg md:max-w-md lg:max-w-lg">
+        <h1 className="text-2xl font-bold mb-6 text-center text-sky-700 sm:text-3xl md:text-4xl">
           Register
         </h1>
 
@@ -50,7 +50,7 @@ export default function RegisterPage() {
                   body: JSON.stringify(values),
                 }
               );
-              const responseText = await res.text(); // Mengambil respons sebagai teks
+              const responseText = await res.text();
               console.log(responseText);
               if (!res.ok) {
                 const errorData = await res.json();
@@ -76,7 +76,7 @@ export default function RegisterPage() {
                 <Field
                   name="email"
                   type="email"
-                  className="w-full p-2 border rounded mt-1"
+                  className="w-full p-2 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
                 />
                 <ErrorMessage
                   name="email"
@@ -93,7 +93,7 @@ export default function RegisterPage() {
                 <Field
                   name="password"
                   type="password"
-                  className="w-full p-2 border rounded mt-1"
+                  className="w-full p-2 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
                 />
                 <ErrorMessage
                   name="password"
@@ -110,7 +110,7 @@ export default function RegisterPage() {
                 <Field
                   name="first_name"
                   type="text"
-                  className="w-full p-2 border rounded mt-1"
+                  className="w-full p-2 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
                 />
                 <ErrorMessage
                   name="first_name"
@@ -127,7 +127,7 @@ export default function RegisterPage() {
                 <Field
                   name="last_name"
                   type="text"
-                  className="w-full p-2 border rounded mt-1"
+                  className="w-full p-2 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
                 />
                 <ErrorMessage
                   name="last_name"
@@ -142,7 +142,7 @@ export default function RegisterPage() {
                 <Field
                   as="select"
                   name="role"
-                  className="w-full p-2 border rounded mt-1"
+                  className="w-full p-2 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
                 >
                   <option value="customer">Customer</option>
                   <option value="event_organizer">Event Organizer</option>
@@ -162,7 +162,7 @@ export default function RegisterPage() {
                 <Field
                   name="referral_code"
                   type="text"
-                  className="w-full p-2 border rounded mt-1"
+                  className="w-full p-2 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
                 />
                 <ErrorMessage
                   name="referral_code"
@@ -173,7 +173,7 @@ export default function RegisterPage() {
 
               <button
                 type="submit"
-                className="bg-sky-700 text-white p-2 rounded mt-4 hover:bg-sky-700"
+                className="bg-sky-700 text-white p-2 rounded mt-4 hover:bg-sky-800 transition-colors duration-300"
               >
                 Register
               </button>
